@@ -1,0 +1,19 @@
+import { GoodReserveProvider, GoodReserveWidget, brutalistTheme } from "@cnvlabskoxyz/goodreservekit";
+
+const theme = brutalistTheme();
+
+export function App() {
+  return (
+    <main className="page">
+      <div>
+        <div className="intro">
+          <h1>GOOD RESERVE</h1>
+          <p>G$ ↔ USDm on Celo mainnet. GoodReserve by CNV Labs KO XYZ.</p>
+        </div>
+        <GoodReserveProvider attributionTags={["goodreservekit-demo"]} theme={theme}>
+          <GoodReserveWidget defaultDirection="buy" />
+        </GoodReserveProvider>
+      </div>
+    </main>
+  );
+}
