@@ -3,13 +3,16 @@ import { parseUnits } from "viem";
 import { celo } from "viem/chains";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { CnvLabsLogo } from "../icons/CnvLabsLogo.js";
+import { GoodDollarIcon } from "../icons/GoodDollarIcon.js";
+import { USDmIcon } from "../icons/USDmIcon.js";
 import {
   displaySymbol,
+  formatAmountInput,
   formatDisplayAmount,
   minimumReceived,
   pricePerTokenIn,
   tokensForDirection,
-  trimTrailingZeros,
   type SwapDirection,
 } from "../format.js";
 import { useGoodReserveQuote } from "../hooks/useGoodReserveQuote.js";
@@ -150,7 +153,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     actionLabel,
     onConnect: () => openConnectModal?.(),
     onSwitchChain: () => switchChain({ chainId: celo.id }),
-    onMax: () => setAmount(trimTrailingZeros(balance.formatted)),
+    onMax: () => setAmount(formatAmountInput(balance.formatted)),
     onFlip: () => setDirection((current) => (current === "buy" ? "sell" : "buy")),
     onSwap: () => {
       const parsed = quoteState.amount;
@@ -166,9 +169,9 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   };
 }
 
-function TokenFace({ symbol, out }: { symbol: string; out?: boolean }) {
-  const mark = symbol === "USDm" || symbol === "cUSD" ? "$" : "G$";
-  return <span className={out ? `${styles.badge} ${styles.badgeOut}` : styles.badge}>{mark}</span>;
+function TokenFace({ symbol }: { symbol: string }) {
+  const Icon = symbol === "GoodDollar" ? GoodDollarIcon : USDmIcon;
+  return <Icon className={styles.badge} size={42} />;
 }
 
 export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
@@ -271,7 +274,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       <div className={styles.card}>
         <div className={styles.row}>
           <div className={styles.token}>
-            <TokenFace symbol={api.tokenOut} out />
+            <TokenFace symbol={api.tokenOut} />
             <div>
               <p className={styles.label}>Swap to</p>
               <p className={styles.symbol}>{displaySymbol(api.tokenOut)}</p>
@@ -316,7 +319,12 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
         </button>
       </div>
       {notice ? <p className={styles.notice}>{notice}</p> : null}
-      {api.showBranding ? <p className={styles.brand}>GoodReserve by CNV Labs KO XYZ</p> : null}
+      {api.showBranding ? (
+        <p className={styles.brand}>
+          <span>GoodReserve by</span>
+          <CnvLabsLogo className={styles.brandLogo} />
+        </p>
+      ) : null}
     </section>
   );
 }

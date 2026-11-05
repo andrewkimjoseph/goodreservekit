@@ -74,12 +74,14 @@ describe("GoodReserveWidget", () => {
     renderWidget();
     fireEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
     expect(openConnectModal).toHaveBeenCalledOnce();
-    expect(screen.getByText("GoodReserve by CNV Labs KO XYZ")).toBeTruthy();
+    expect(screen.getByText("GoodReserve by")).toBeTruthy();
+    expect(screen.getByRole("img", { name: "CNV Labs KO XYZ" })).toBeTruthy();
   });
 
   it("hides the credit when branding is off", () => {
     renderWidget({ showBranding: false });
-    expect(screen.queryByText("GoodReserve by CNV Labs KO XYZ")).toBeNull();
+    expect(screen.queryByText("GoodReserve by")).toBeNull();
+    expect(screen.queryByRole("img", { name: "CNV Labs KO XYZ" })).toBeNull();
   });
 
   it("shows the reserve quote and submits the typed amount", async () => {

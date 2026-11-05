@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatAmountInput,
+  formatDisplayAmount,
   minimumReceived,
   parsePositiveAmount,
   pricePerTokenIn,
@@ -23,6 +25,14 @@ describe("reserve formatting", () => {
   it("states output per input and the slippage floor", () => {
     expect(pricePerTokenIn("1000", "2")).toBe("0.002");
     expect(minimumReceived("2", 0.5)).toBe("1.99");
+  });
+
+  it("caps balance display at four decimals and keeps swap input ungrouped", () => {
+    const shown = formatDisplayAmount("14687.079300335706781159");
+    expect(shown.includes("0793")).toBe(true);
+    expect(shown.includes("3357")).toBe(false);
+    expect(formatAmountInput("0.138931848061482686")).toBe("0.138931");
+    expect(formatAmountInput("10")).toBe("10");
   });
 });
 

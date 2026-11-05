@@ -10,7 +10,7 @@ export function App() {
           <h1>GOOD RESERVE</h1>
           <p>G$ ↔ USDm on Celo mainnet. GoodReserve by CNV Labs KO XYZ.</p>
         </div>
-        <GoodReserveProvider attributionTags={["goodreservekit-demo"]} theme={theme}>
+        <GoodReserveProvider attributionTags={["goodreservekit_demo"]} theme={theme}>
           <GoodReserveWidget defaultDirection="buy" />
         </GoodReserveProvider>
       </div>

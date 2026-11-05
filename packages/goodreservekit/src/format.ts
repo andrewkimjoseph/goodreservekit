@@ -23,10 +23,19 @@ export function parsePositiveAmount(value: string): string | null {
   return trimmed;
 }
 
-export function formatDisplayAmount(value: string, maxDecimals = 6): string {
+export function formatDisplayAmount(value: string, maxDecimals = 4): string {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return value;
   return numeric.toLocaleString(undefined, { maximumFractionDigits: maxDecimals });
+}
+
+/** Swap-field amount: no grouping, truncated so a max balance fits the input. */
+export function formatAmountInput(value: string, maxDecimals = 6): string {
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(value);
+  if (!match) return value;
+  const whole = match[1] ?? "0";
+  const fraction = (match[2] ?? "").slice(0, maxDecimals).replace(/0+$/, "");
+  return fraction ? `${whole}.${fraction}` : whole;
 }
 
 export function pricePerTokenIn(amountIn: string, expectedOut: string): string | null {

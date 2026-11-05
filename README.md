@@ -9,7 +9,7 @@ The widget quotes and prepares swaps with [`@cnvlabskoxyz/celina-sdk/gooddollar-
 ```tsx
 import { GoodReserveProvider, GoodReserveWidget, brutalistTheme } from "@cnvlabskoxyz/goodreservekit";
 
-<GoodReserveProvider attributionTags={["your-app"]} theme={brutalistTheme()}>
+<GoodReserveProvider attributionTags={["your_app"]} theme={brutalistTheme()}>
   <GoodReserveWidget defaultDirection="buy" />
 </GoodReserveProvider>
 ```

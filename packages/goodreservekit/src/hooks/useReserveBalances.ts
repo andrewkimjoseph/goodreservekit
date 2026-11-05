@@ -4,7 +4,7 @@ import {
   GOODDOLLAR_RESERVE_COLLATERAL,
   GOODDOLLAR_TOKEN_ADDRESS,
 } from "@cnvlabskoxyz/celina-sdk/gooddollar-reserve";
-import { trimTrailingZeros } from "../format.js";
+import { formatDisplayAmount } from "../format.js";
 
 export interface ReserveBalance {
   raw: bigint;
@@ -17,7 +17,7 @@ const ZERO: ReserveBalance = { raw: 0n, formatted: "0", display: "0" };
 function toBalance(value: unknown): ReserveBalance {
   if (typeof value !== "bigint") return ZERO;
   const formatted = formatUnits(value, 18);
-  return { raw: value, formatted, display: trimTrailingZeros(formatted) };
+  return { raw: value, formatted, display: formatDisplayAmount(formatted, 4) };
 }
 
 export function useReserveBalances() {
