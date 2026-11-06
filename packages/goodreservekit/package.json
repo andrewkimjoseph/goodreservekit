@@ -1,0 +1,78 @@
+{
+  "name": "@cnvlabskoxyz/goodreservekit",
+  "version": "0.1.0",
+  "description": "Brutalist React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo. GoodReserve by CNV Labs KO XYZ.",
+  "type": "module",
+  "sideEffects": true,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "dev": "tsup --watch"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "gooddollar",
+    "goodreserve",
+    "celo",
+    "react",
+    "wagmi",
+    "rainbowkit"
+  ],
+  "author": {
+    "name": "CNV Labs KO XYZ",
+    "url": "https://github.com/thecanvassing"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewkimjoseph/goodreservekit.git",
+    "directory": "packages/goodreservekit"
+  },
+  "bugs": {
+    "url": "https://github.com/andrewkimjoseph/goodreservekit/issues"
+  },
+  "homepage": "https://github.com/andrewkimjoseph/goodreservekit#readme",
+  "dependencies": {
+    "@cnvlabskoxyz/celina-sdk": "1.1.0"
+  },
+  "peerDependencies": {
+    "@rainbow-me/rainbowkit": ">=2",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "viem": ">=2",
+    "wagmi": ">=2"
+  },
+  "devDependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.9",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "jsdom": "^26.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "viem": "^2.44.4",
+    "vitest": "^3.2.4",
+    "wagmi": "^2.16.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
