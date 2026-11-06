@@ -46,5 +46,10 @@ describe("brutalist theme", () => {
     expect(merged.colors.accent).toBe("#ff00aa");
     expect(merged.colors.primary).toBe("#476520");
     expect(merged.shadow).toBe(theme.shadow);
+    expect(theme.fontFamilySecondary).toContain("Sen");
+    expect(theme.toast.durationMs).toBe(4000);
+    const timed = mergeTheme(theme, { toast: { durationMs: 1500 } });
+    expect(timed.toast.durationMs).toBe(1500);
+    expect(timed.toast.background).toBe(theme.toast.background);
   });
 });

@@ -10,6 +10,15 @@ export interface GoodReserveThemeColors {
   border: string;
 }
 
+export interface GoodReserveToastTheme {
+  background: string;
+  foreground: string;
+  border: string;
+  shadow: string;
+  durationMs: number;
+  offset: string;
+}
+
 export interface GoodReserveTheme {
   colors: GoodReserveThemeColors;
   radii: {
@@ -19,7 +28,9 @@ export interface GoodReserveTheme {
   borderWidth: string;
   shadow: string;
   fontFamily: string;
+  fontFamilySecondary: string;
   fontFamilyMono: string;
+  toast: GoodReserveToastTheme;
 }
 
 export type GoodReserveThemeOverride = {
@@ -28,7 +39,9 @@ export type GoodReserveThemeOverride = {
   borderWidth?: string;
   shadow?: string;
   fontFamily?: string;
+  fontFamilySecondary?: string;
   fontFamilyMono?: string;
+  toast?: Partial<GoodReserveToastTheme>;
 };
 
 /** Black, white, Celo forest, and Celo yellow. Square corners and a hard shadow. */
@@ -53,7 +66,16 @@ export function brutalistTheme(override?: GoodReserveThemeOverride): GoodReserve
       borderWidth: "3px",
       shadow: "6px 6px 0 #000000",
       fontFamily: '"Bricolage Grotesque", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif',
+      fontFamilySecondary: '"Sen", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif',
       fontFamilyMono: '"IBM Plex Mono", ui-monospace, monospace',
+      toast: {
+        background: "#ffffff",
+        foreground: "#9b1c1c",
+        border: "#000000",
+        shadow: "4px 4px 0 #000000",
+        durationMs: 4000,
+        offset: "16px",
+      },
     },
     override,
   );
@@ -69,6 +91,7 @@ export function mergeTheme(
     ...override,
     colors: { ...base.colors, ...override.colors },
     radii: { ...base.radii, ...override.radii },
+    toast: { ...base.toast, ...override.toast },
   };
 }
 
@@ -89,6 +112,12 @@ export function themeToStyle(theme: GoodReserveTheme): Record<string, string> {
     "--grk-border-width": theme.borderWidth,
     "--grk-shadow": theme.shadow,
     "--grk-font": theme.fontFamily,
+    "--grk-font-secondary": theme.fontFamilySecondary,
     "--grk-font-mono": theme.fontFamilyMono,
+    "--grk-toast-background": theme.toast.background,
+    "--grk-toast-foreground": theme.toast.foreground,
+    "--grk-toast-border": theme.toast.border,
+    "--grk-toast-shadow": theme.toast.shadow,
+    "--grk-toast-offset": theme.toast.offset,
   };
 }

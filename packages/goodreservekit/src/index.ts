@@ -17,7 +17,9 @@ export type {
   GoodReserveTheme,
   GoodReserveThemeColors,
   GoodReserveThemeOverride,
+  GoodReserveToastTheme,
 } from "./theme/theme.js";
+export type { GoodReserveToastPayload } from "./widget/GoodReserveToast.js";
 export {
   displaySymbol,
   formatDisplayAmount,

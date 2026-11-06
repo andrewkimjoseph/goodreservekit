@@ -45,5 +45,5 @@ export function useReserveBalances() {
 
   const goodDollar = toBalance(result.data?.[0]?.result);
   const usdm = toBalance(result.data?.[1]?.result);
-  return { goodDollar, usdm, isLoading: result.isLoading };
+  return { goodDollar, usdm, isLoading: result.isLoading, refetch: result.refetch };
 }

@@ -3,12 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GoodReserveProvider } from "../provider/GoodReserveProvider.js";
 import { GoodReserveWidget } from "./GoodReserveWidget.js";
 
-const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient } =
+const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient, refetchBalances } =
   vi.hoisted(() => ({
     openConnectModal: vi.fn(),
     getReserveQuote: vi.fn(),
     prepareReserveSwap: vi.fn(),
     sendTransactionAsync: vi.fn(),
+    refetchBalances: vi.fn(async () => ({})),
     publicClient: {
       waitForTransactionReceipt: vi.fn(async () => ({ status: "success" })),
     },
@@ -24,6 +25,7 @@ vi.mock("wagmi", () => ({
       ? [{ result: 2_000000000000000000n, status: "success" }, { result: 5_000000000000000000n, status: "success" }]
       : undefined,
     isLoading: false,
+    refetch: refetchBalances,
   }),
 }));
 
@@ -58,6 +60,7 @@ describe("GoodReserveWidget", () => {
   beforeEach(() => {
     accountState = {};
     openConnectModal.mockReset();
+    refetchBalances.mockClear();
     getReserveQuote.mockReset();
     getReserveQuote.mockResolvedValue({
       protocol: "gooddollar_reserve",
@@ -126,6 +129,54 @@ describe("GoodReserveWidget", () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Swapped" })).toBeTruthy();
     });
+    expect(refetchBalances).toHaveBeenCalled();
+    expect(screen.getByRole("alert").textContent).toContain("Swapped.");
+    expect(document.querySelector(".grk-root")?.textContent).not.toContain("Swapped.");
+  });
+
+  it("toasts a rejected signature instead of printing it in the card", async () => {
+    accountState = {
+      address: "0x0000000000000000000000000000000000000001",
+      chainId: 42220,
+    };
+    prepareReserveSwap.mockResolvedValue({
+      preparedFlow: true,
+      chainId: 42220,
+      from: accountState.address,
+      summary: "swap",
+      steps: [
+        {
+          kind: "contract",
+          to: "0x88de45906D4F5a57315c133620cfa484cB297541",
+          data: "0x1234",
+          value: "0",
+          description: "swap",
+        },
+      ],
+    });
+    sendTransactionAsync.mockRejectedValue(new Error("User rejected the request."));
+
+    renderWidget();
+    fireEvent.change(screen.getByLabelText("Amount of USDm to swap"), { target: { value: "1" } });
+    fireEvent.click(await screen.findByRole("button", { name: "Swap" }));
+
+    const toast = await screen.findByRole("alert");
+    expect(toast.textContent).toContain("You rejected the request in your wallet. Nothing was swapped.");
+    expect(document.querySelector(".grk-root")?.textContent).not.toContain("Nothing was swapped");
+  });
+
+  it("does not toast a quote failure", async () => {
+    accountState = {
+      address: "0x0000000000000000000000000000000000000001",
+      chainId: 42220,
+    };
+    getReserveQuote.mockRejectedValue(new Error("rpc down"));
+    renderWidget();
+    fireEvent.change(screen.getByLabelText("Amount of USDm to swap"), { target: { value: "1" } });
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Enter amount" })).toBeTruthy();
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("exposes the same actions through the custom render prop", () => {

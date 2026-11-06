@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { parseUnits } from "viem";
 import { celo } from "viem/chains";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -21,6 +21,11 @@ import { useReserveBalances, type ReserveBalance } from "../hooks/useReserveBala
 import { useGoodReserveConfig } from "../provider/GoodReserveProvider.js";
 import { themeToStyle } from "../theme/theme.js";
 import { styles } from "../styles/styles.js";
+import {
+  GoodReserveToast,
+  type GoodReserveToastItem,
+  type GoodReserveToastPayload,
+} from "./GoodReserveToast.js";
 import "../styles/goodreserve.css";
 
 const SLIPPAGE_PRESETS = [0.1, 0.5, 1] as const;
@@ -30,6 +35,8 @@ export interface GoodReserveWidgetProps {
   defaultDirection?: SwapDirection;
   /** Show the CNV Labs credit. Defaults to true. */
   showBranding?: boolean;
+  /** Replace the default stamp. The host still receives tone, message, and dismiss. */
+  renderToast?: (toast: GoodReserveToastPayload) => ReactNode;
   className?: string;
   style?: CSSProperties;
 }
@@ -82,6 +89,11 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   useEffect(() => {
     swapState.reset();
   }, [amount, direction, slippage, swapState.reset]);
+
+  useEffect(() => {
+    if (swapState.step !== "done") return;
+    void balances.refetch();
+  }, [balances.refetch, swapState.step]);
 
   const insufficient = useMemo(() => {
     const parsed = quoteState.amount;
@@ -178,7 +190,6 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
   const { theme } = useGoodReserveConfig();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [customSlippage, setCustomSlippage] = useState("");
-  const notice = api.swapError ?? api.quoteError;
 
   return (
     <section
@@ -318,7 +329,6 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
           {api.actionLabel}
         </button>
       </div>
-      {notice ? <p className={styles.notice}>{notice}</p> : null}
       {api.showBranding ? (
         <p className={styles.brand}>
           <span>GoodReserve by</span>
@@ -329,17 +339,54 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
   );
 }
 
-export function GoodReserveWidget(props: GoodReserveWidgetProps) {
+export function GoodReserveWidget({ renderToast, ...props }: GoodReserveWidgetProps) {
   const api = useGoodReserveWidget(props);
-  return <GoodReserveView api={api} />;
+  return (
+    <>
+      <GoodReserveView api={api} />
+      <ReserveToasts step={api.step} swapError={api.swapError} renderToast={renderToast} />
+    </>
+  );
 }
 
 function CustomWidget({
   children,
+  renderToast,
   ...props
 }: GoodReserveWidgetProps & { children: (api: GoodReserveWidgetApi) => ReactNode }) {
   const api = useGoodReserveWidget(props);
-  return children(api);
+  return (
+    <>
+      {children(api)}
+      <ReserveToasts step={api.step} swapError={api.swapError} renderToast={renderToast} />
+    </>
+  );
+}
+
+function ReserveToasts({
+  step,
+  swapError,
+  renderToast,
+}: {
+  step: GoodReserveWidgetApi["step"];
+  swapError: string | null;
+  renderToast?: (toast: GoodReserveToastPayload) => ReactNode;
+}) {
+  const [item, setItem] = useState<GoodReserveToastItem | null>(null);
+  const nextId = useRef(0);
+  const dismiss = useCallback(() => setItem(null), []);
+
+  useEffect(() => {
+    if (step === "error" && swapError) {
+      setItem({ id: ++nextId.current, tone: "error", message: swapError });
+      return;
+    }
+    if (step === "done") {
+      setItem({ id: ++nextId.current, tone: "success", message: "Swapped." });
+    }
+  }, [step, swapError]);
+
+  return <GoodReserveToast item={item} onDismiss={dismiss} renderToast={renderToast} />;
 }
 
 GoodReserveWidget.Custom = CustomWidget;

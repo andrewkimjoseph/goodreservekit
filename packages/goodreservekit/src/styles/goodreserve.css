@@ -1,12 +1,12 @@
 .grk-root {
   box-sizing: border-box;
-  width: min(100%, 420px);
+  width: min(100%, 480px);
   background: var(--grk-background);
   color: var(--grk-foreground);
   border: var(--grk-border-width) solid var(--grk-border);
   border-radius: var(--grk-radius-widget);
   box-shadow: var(--grk-shadow);
-  font-family: var(--grk-font);
+  font-family: var(--grk-font-secondary);
   padding: 16px;
 }
 
@@ -26,6 +26,7 @@
 
 .grk-wordmark {
   margin: 0;
+  font-family: var(--grk-font);
   font-size: 22px;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -257,11 +258,66 @@
   color: var(--grk-primary-foreground);
 }
 
-.grk-notice {
-  margin: 10px 0 0;
-  font-size: 13px;
+.grk-toastHost {
+  position: fixed;
+  z-index: 80;
+  top: var(--grk-toast-offset);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  pointer-events: none;
+  font-family: var(--grk-font-secondary);
+}
+
+.grk-toastSlot {
+  width: min(100%, 480px);
+  pointer-events: auto;
+  transform: translateY(-120%);
+  transition: transform 180ms linear;
+}
+
+.grk-toastSlot[data-open="true"] {
+  transform: translateY(0);
+}
+
+.grk-toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 14px 16px;
+  border: var(--grk-border-width) solid var(--grk-toast-border);
+  background: var(--grk-toast-background);
+  color: var(--grk-toast-foreground);
+  box-shadow: var(--grk-toast-shadow);
+  cursor: pointer;
+}
+
+.grk-toast p {
+  margin: 0;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--grk-danger);
+}
+
+.grk-toastClose {
+  flex: none;
+  border: 2px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  line-height: 1;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grk-toastSlot {
+    transition: none;
+  }
 }
 
 .grk-brand {
