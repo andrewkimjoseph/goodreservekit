@@ -360,7 +360,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       {api.showBranding ? (
         <footer className={styles.brand}>
           <CnvLabsLogo className={styles.brandLogo} />
-          <span>AIOSS (AI Open Source Software)</span>
+          <span>AIOSS</span>
         </footer>
       ) : null}
     </section>
