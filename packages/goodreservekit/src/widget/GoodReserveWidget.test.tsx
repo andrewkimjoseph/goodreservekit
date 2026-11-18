@@ -78,13 +78,13 @@ describe("GoodReserveWidget", () => {
     fireEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
     expect(openConnectModal).toHaveBeenCalledOnce();
     expect(screen.getByRole("img", { name: "GoodReserve" })).toBeTruthy();
-    expect(screen.getByText("GoodReserve by")).toBeTruthy();
+    expect(screen.getByText("AIOSS (AI Open Source Software)")).toBeTruthy();
     expect(screen.getByRole("img", { name: "CNV Labs KO XYZ" })).toBeTruthy();
   });
 
   it("hides the credit when branding is off", () => {
     renderWidget({ showBranding: false });
-    expect(screen.queryByText("GoodReserve by")).toBeNull();
+    expect(screen.queryByText("AIOSS (AI Open Source Software)")).toBeNull();
     expect(screen.queryByRole("img", { name: "CNV Labs KO XYZ" })).toBeNull();
   });
 

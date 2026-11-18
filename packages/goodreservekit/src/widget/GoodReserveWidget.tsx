@@ -359,8 +359,8 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       </div>
       {api.showBranding ? (
         <footer className={styles.brand}>
-          <span>GoodReserve by</span>
           <CnvLabsLogo className={styles.brandLogo} />
+          <span>AIOSS (AI Open Source Software)</span>
         </footer>
       ) : null}
     </section>
