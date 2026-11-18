@@ -31,6 +31,7 @@ export const styles = {
   toastHost: "grk-toastHost",
   toastSlot: "grk-toastSlot",
   toast: "grk-toast",
+  toastMark: "grk-toastMark",
   toastError: "grk-toastError",
   toastSuccess: "grk-toastSuccess",
   toastClose: "grk-toastClose",

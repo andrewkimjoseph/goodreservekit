@@ -179,6 +179,16 @@ describe("GoodReserveWidget", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
+  it("clears the typed amount when the direction flips", () => {
+    renderWidget();
+    fireEvent.change(screen.getByLabelText("Amount of USDm to swap"), { target: { value: "12.5" } });
+    fireEvent.click(screen.getByRole("button", { name: "Flip swap direction" }));
+
+    const input = screen.getByLabelText("Amount of G$ to swap") as HTMLInputElement;
+    expect(input.value).toBe("");
+    expect(screen.getByLabelText("Expected output").textContent).toBe("0");
+  });
+
   it("opens slippage settings and applies the 1% preset", () => {
     renderWidget();
     const settings = screen.getByRole("button", { name: "Slippage settings, 0.5%" });

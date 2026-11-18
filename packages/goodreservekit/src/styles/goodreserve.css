@@ -306,7 +306,8 @@
 }
 
 .grk-toastSlot {
-  width: min(100%, 480px);
+  width: max-content;
+  max-width: min(100%, 420px);
   pointer-events: auto;
   transform: translateY(-120%);
   transition: transform 220ms ease-out;
@@ -318,9 +319,8 @@
 
 .grk-toast {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 10px;
   margin: 0;
   padding: 12px 14px;
   border: var(--grk-border-width) solid var(--grk-toast-border);
@@ -331,18 +331,23 @@
   cursor: pointer;
 }
 
-.grk-toastError {
-  background: color-mix(in srgb, var(--grk-danger) 8%, #fff);
-  color: var(--grk-danger);
+.grk-toastMark {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--grk-danger);
 }
 
-.grk-toastSuccess {
-  background: color-mix(in srgb, var(--grk-primary) 12%, #fff);
-  color: var(--grk-primary);
+.grk-toastSuccess .grk-toastMark {
+  background: var(--grk-primary);
 }
 
 .grk-toast p {
   margin: 0;
+  flex: 1;
+  min-width: 0;
   font-size: 14px;
   font-weight: 500;
 }

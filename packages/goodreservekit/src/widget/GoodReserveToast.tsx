@@ -71,6 +71,7 @@ export function GoodReserveToast({
           renderToast(payload)
         ) : (
           <div className={`${styles.toast} ${toneClass}`} role="alert" onClick={payload.dismiss}>
+            <span className={styles.toastMark} aria-hidden="true" />
             <p>{item.message}</p>
             <button type="button" className={styles.toastClose} aria-label="Dismiss" onClick={payload.dismiss}>
               ×

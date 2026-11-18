@@ -169,7 +169,10 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     onConnect: () => openConnectModal?.(),
     onSwitchChain: () => switchChain({ chainId: celo.id }),
     onMax: () => setAmount(formatAmountInput(balance.formatted)),
-    onFlip: () => setDirection((current) => (current === "buy" ? "sell" : "buy")),
+    onFlip: () => {
+      setAmount("");
+      setDirection((current) => (current === "buy" ? "sell" : "buy"));
+    },
     onSwap: () => {
       const parsed = quoteState.amount;
       if (!parsed) return;
