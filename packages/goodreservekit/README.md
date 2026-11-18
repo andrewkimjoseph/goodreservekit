@@ -1,6 +1,6 @@
 # @cnvlabskoxyz/goodreservekit
 
-Brutalist React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo mainnet.
+Flat React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo mainnet.
 
 GoodReserve by CNV Labs KO XYZ.
 

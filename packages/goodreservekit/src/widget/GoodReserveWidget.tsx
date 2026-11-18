@@ -147,8 +147,8 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     tokenOut,
     quoteText: expected ? formatDisplayAmount(expected) : "0",
     priceText: price
-      ? `${price} ${displaySymbol(tokenOut)} PER ${displaySymbol(tokenIn)}`
-      : `0 ${displaySymbol(tokenOut)} PER ${displaySymbol(tokenIn)}`,
+      ? `${price} ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`
+      : `0 ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`,
     minimumText: expected
       ? `${minimumReceived(expected, slippage) ?? "0"} ${displaySymbol(tokenOut)}`
       : `0 ${displaySymbol(tokenOut)}`,
@@ -196,6 +196,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       className={[styles.root, api.className].filter(Boolean).join(" ")}
       style={{ ...themeToStyle(theme), ...api.style }}
     >
+      <div className={styles.body}>
       <header className={styles.header}>
         <h2 className={styles.wordmark}>
           Good<span>Reserve</span>
@@ -278,7 +279,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
 
       <div className={styles.flipWrap}>
         <button type="button" className={styles.flip} aria-label="Flip swap direction" onClick={api.onFlip}>
-          ↕
+          <FlipIcon />
         </button>
       </div>
 
@@ -329,11 +330,12 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
           {api.actionLabel}
         </button>
       </div>
+      </div>
       {api.showBranding ? (
-        <p className={styles.brand}>
+        <footer className={styles.brand}>
           <span>GoodReserve by</span>
           <CnvLabsLogo className={styles.brandLogo} />
-        </p>
+        </footer>
       ) : null}
     </section>
   );
@@ -390,6 +392,21 @@ function ReserveToasts({
 }
 
 GoodReserveWidget.Custom = CustomWidget;
+
+function FlipIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="M8 2.5v11M5 5.5 8 2.5l3 3M5 10.5 8 13.5l3-3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function GearIcon() {
   return (

@@ -1,15 +1,15 @@
 # GoodReserve
 
-Brutalist React widget for swapping GoodDollar (G$) and USDm through the GoodDollar reserve on Celo mainnet.
+Flat React widget for swapping GoodDollar (G$) and USDm through the GoodDollar reserve on Celo mainnet.
 
 **GoodReserve by CNV Labs KO XYZ.**
 
 The widget quotes and prepares swaps with [`@cnvlabskoxyz/celina-sdk/gooddollar-reserve`](https://github.com/andrewkimjoseph/celina-sdk). Wallet connection uses [RainbowKit](https://rainbowkit.com). The host app owns `WagmiProvider` and `RainbowKitProvider`.
 
 ```tsx
-import { GoodReserveProvider, GoodReserveWidget, brutalistTheme } from "@cnvlabskoxyz/goodreservekit";
+import { GoodReserveProvider, GoodReserveWidget, flatTheme } from "@cnvlabskoxyz/goodreservekit";
 
-<GoodReserveProvider attributionTags={["your_app"]} theme={brutalistTheme()}>
+<GoodReserveProvider attributionTags={["your_app"]} theme={flatTheme()}>
   <GoodReserveWidget defaultDirection="buy" />
 </GoodReserveProvider>
 ```
@@ -22,7 +22,7 @@ import { GoodReserveProvider, GoodReserveWidget, brutalistTheme } from "@cnvlabs
 
 ## Theme
 
-`brutalistTheme()` is the default: black borders, hard offset shadow, square corners, Celo forest and Celo yellow. Override with `mergeTheme(brutalistTheme(), { colors: { accent: "#ff00aa" } })`. Tokens are CSS variables prefixed `--grk-` on the widget root.
+`flatTheme()` is the default: a white card, 1px borders, a soft shadow, and Celo forest green on the primary button. Override with `mergeTheme(flatTheme(), { colors: { primary: "#ff00aa" } })`. Tokens are CSS variables prefixed `--grk-` on the widget root.
 
 ## Demo
 

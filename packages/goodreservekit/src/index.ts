@@ -12,7 +12,7 @@ export { usePrepareGoodReserveSwap } from "./hooks/usePrepareGoodReserveSwap.js"
 export type { PrepareGoodReserveSwapArgs } from "./hooks/usePrepareGoodReserveSwap.js";
 export { useGoodReserveSwap } from "./hooks/useGoodReserveSwap.js";
 export type { GoodReserveSwapStep } from "./hooks/useGoodReserveSwap.js";
-export { brutalistTheme, mergeTheme, themeToStyle } from "./theme/theme.js";
+export { flatTheme, mergeTheme, themeToStyle } from "./theme/theme.js";
 export type {
   GoodReserveTheme,
   GoodReserveThemeColors,

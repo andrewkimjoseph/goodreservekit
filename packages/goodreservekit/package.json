@@ -1,7 +1,7 @@
 {
   "name": "@cnvlabskoxyz/goodreservekit",
   "version": "0.1.0",
-  "description": "Brutalist React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo. GoodReserve by CNV Labs KO XYZ.",
+  "description": "Flat React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo. GoodReserve by CNV Labs KO XYZ.",
   "type": "module",
   "sideEffects": true,
   "main": "./dist/index.cjs",

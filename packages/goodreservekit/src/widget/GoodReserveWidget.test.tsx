@@ -130,7 +130,7 @@ describe("GoodReserveWidget", () => {
       expect(screen.getByRole("button", { name: "Swapped" })).toBeTruthy();
     });
     expect(refetchBalances).toHaveBeenCalled();
-    expect(screen.getByRole("alert").textContent).toContain("Swapped.");
+    expect((await screen.findByRole("alert")).textContent).toContain("Swapped.");
     expect(document.querySelector(".grk-root")?.textContent).not.toContain("Swapped.");
   });
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useGoodReserveConfig } from "../provider/GoodReserveProvider.js";
 import { themeToStyle } from "../theme/theme.js";
@@ -18,7 +18,7 @@ export interface GoodReserveToastItem {
   message: string;
 }
 
-const LEAVE_MS = 180;
+const LEAVE_MS = 220;
 
 export function GoodReserveToast({
   item,
@@ -62,23 +62,15 @@ export function GoodReserveToast({
     message: item.message,
     dismiss: () => leave.current?.(),
   };
-  const style: CSSProperties = {
-    ...themeToStyle(theme),
-    ...(item.tone === "success"
-      ? ({
-          "--grk-toast-background": theme.colors.accent,
-          "--grk-toast-foreground": theme.colors.accentForeground,
-        } as CSSProperties)
-      : null),
-  };
+  const toneClass = item.tone === "success" ? styles.toastSuccess : styles.toastError;
 
   return createPortal(
-    <div className={styles.toastHost} style={style}>
+    <div className={styles.toastHost} style={themeToStyle(theme)}>
       <div className={styles.toastSlot} data-open={open ? "true" : "false"}>
         {renderToast ? (
           renderToast(payload)
         ) : (
-          <div className={styles.toast} role="alert" onClick={payload.dismiss}>
+          <div className={`${styles.toast} ${toneClass}`} role="alert" onClick={payload.dismiss}>
             <p>{item.message}</p>
             <button type="button" className={styles.toastClose} aria-label="Dismiss" onClick={payload.dismiss}>
               ×

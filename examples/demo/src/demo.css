@@ -6,11 +6,9 @@ body,
 }
 
 body {
-  background:
-    linear-gradient(#000 0 0) left / 18px 100% no-repeat,
-    #f4f1e8;
-  color: #000;
-  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  background: #f4f4f5;
+  color: #18181b;
+  font-family: "Sen", ui-sans-serif, system-ui, sans-serif;
 }
 
 .page {
@@ -26,14 +24,15 @@ body {
 }
 
 .intro p {
-  margin: 8px 0 0;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 13px;
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #71717a;
 }
 
 .intro h1 {
   margin: 0;
-  font-size: 42px;
-  line-height: 0.9;
-  letter-spacing: -0.05em;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }

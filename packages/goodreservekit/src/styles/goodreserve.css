@@ -6,8 +6,8 @@
   border: var(--grk-border-width) solid var(--grk-border);
   border-radius: var(--grk-radius-widget);
   box-shadow: var(--grk-shadow);
-  font-family: var(--grk-font-secondary);
-  padding: 16px;
+  font-family: var(--grk-font);
+  overflow: hidden;
 }
 
 .grk-root *,
@@ -16,21 +16,28 @@
   box-sizing: border-box;
 }
 
+.grk-body {
+  padding: 20px 20px 16px;
+}
+
+.grk-root :focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--grk-primary) 40%, transparent);
+  outline-offset: 2px;
+}
+
 .grk-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .grk-wordmark {
   margin: 0;
-  font-family: var(--grk-font);
-  font-size: 22px;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 600;
 }
 
 .grk-wordmark span {
@@ -38,33 +45,33 @@
 }
 
 .grk-iconButton {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  border: var(--grk-border-width) solid var(--grk-border);
+  border: none;
   border-radius: var(--grk-radius-control);
-  background: var(--grk-background);
-  color: var(--grk-foreground);
+  background: transparent;
+  color: var(--grk-muted);
   cursor: pointer;
-  box-shadow: 3px 3px 0 var(--grk-border);
 }
 
 .grk-iconButton:hover,
-.grk-flip:hover,
-.grk-preset:hover {
-  transform: translate(-1px, -1px);
-}
-
 .grk-iconButton[aria-pressed="true"] {
-  background: var(--grk-accent);
+  background: var(--grk-surface);
+  color: var(--grk-foreground);
 }
 
 .grk-card {
   border: var(--grk-border-width) solid var(--grk-border);
   border-radius: var(--grk-radius-control);
-  padding: 12px;
-  background: var(--grk-background);
+  padding: 12px 14px;
+  background: var(--grk-surface);
+}
+
+.grk-card:focus-within {
+  border-color: var(--grk-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--grk-primary) 20%, transparent);
 }
 
 .grk-row {
@@ -82,8 +89,8 @@
 }
 
 .grk-badge {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   flex: none;
   display: block;
   border: none;
@@ -101,18 +108,15 @@
 
 .grk-label {
   margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 12px;
   color: var(--grk-muted);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .grk-symbol {
   margin: 0;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .grk-amountWrap {
@@ -122,7 +126,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 4px;
 }
 
 .grk-amountLine {
@@ -140,9 +144,10 @@
   border: none;
   background: transparent;
   text-align: right;
-  font-family: var(--grk-font-mono);
-  font-size: 18px;
-  font-weight: 700;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--grk-foreground);
   outline: none;
   overflow: hidden;
@@ -155,20 +160,30 @@
 }
 
 .grk-max {
-  border: 2px solid var(--grk-border);
-  background: var(--grk-background);
-  font-family: var(--grk-font);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  padding: 4px 6px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--grk-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 8px;
   cursor: pointer;
 }
 
+.grk-max:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--grk-primary) 10%, transparent);
+}
+
+.grk-max:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .grk-balance {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   text-align: right;
-  font-family: var(--grk-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
   color: var(--grk-muted);
 }
@@ -176,22 +191,26 @@
 .grk-flipWrap {
   display: flex;
   justify-content: center;
-  margin: -14px 0;
+  margin: -10px 0;
   position: relative;
   z-index: 1;
 }
 
 .grk-flip {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
   border: var(--grk-border-width) solid var(--grk-border);
   border-radius: var(--grk-radius-control);
-  background: var(--grk-primary);
-  color: var(--grk-primary-foreground);
+  background: var(--grk-background);
+  color: var(--grk-foreground);
   cursor: pointer;
-  box-shadow: 3px 3px 0 var(--grk-border);
-  font-size: 18px;
-  font-weight: 800;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.grk-flip:hover {
+  background: var(--grk-surface);
 }
 
 .grk-stats {
@@ -204,17 +223,15 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grk-muted);
 }
 
 .grk-stat b {
-  font-family: var(--grk-font-mono);
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--grk-foreground);
   text-align: right;
 }
 
@@ -229,33 +246,30 @@
 }
 
 .grk-button {
-  border: var(--grk-border-width) solid var(--grk-border);
+  border: none;
   border-radius: var(--grk-radius-control);
-  min-height: 52px;
-  padding: 12px;
-  font-family: var(--grk-font);
+  min-height: 40px;
+  padding: 8px 12px;
+  font-family: inherit;
   font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 4px 4px 0 var(--grk-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .grk-button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 0.5;
   box-shadow: none;
 }
 
 .grk-primary {
-  background: var(--grk-accent);
-  color: var(--grk-accent-foreground);
-}
-
-.grk-secondary {
   background: var(--grk-primary);
   color: var(--grk-primary-foreground);
+}
+
+.grk-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--grk-primary) 88%, black);
 }
 
 .grk-toastHost {
@@ -268,14 +282,14 @@
   justify-content: center;
   padding: 0 16px;
   pointer-events: none;
-  font-family: var(--grk-font-secondary);
+  font-family: var(--grk-font);
 }
 
 .grk-toastSlot {
   width: min(100%, 480px);
   pointer-events: auto;
   transform: translateY(-120%);
-  transition: transform 180ms linear;
+  transition: transform 220ms ease-out;
 }
 
 .grk-toastSlot[data-open="true"] {
@@ -288,29 +302,41 @@
   justify-content: space-between;
   gap: 16px;
   margin: 0;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border: var(--grk-border-width) solid var(--grk-toast-border);
+  border-radius: 10px;
   background: var(--grk-toast-background);
   color: var(--grk-toast-foreground);
   box-shadow: var(--grk-toast-shadow);
   cursor: pointer;
 }
 
+.grk-toastError {
+  background: color-mix(in srgb, var(--grk-danger) 8%, #fff);
+  color: var(--grk-danger);
+}
+
+.grk-toastSuccess {
+  background: color-mix(in srgb, var(--grk-primary) 12%, #fff);
+  color: var(--grk-primary);
+}
+
 .grk-toast p {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .grk-toastClose {
   flex: none;
-  border: 2px solid currentColor;
+  border: none;
   background: transparent;
   color: inherit;
   font: inherit;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 500;
   line-height: 1;
-  padding: 2px 8px;
+  padding: 0 4px;
   cursor: pointer;
 }
 
@@ -321,62 +347,82 @@
 }
 
 .grk-brand {
-  margin: 14px 0 0;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 800;
+  padding: 10px 20px;
+  background: var(--grk-surface);
+  border-top: var(--grk-border-width) solid var(--grk-border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grk-muted);
 }
 
 .grk-brandLogo {
-  height: 24px;
+  height: 22px;
   width: auto;
   flex: none;
   display: block;
 }
 
 .grk-settings {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   border: var(--grk-border-width) solid var(--grk-border);
+  border-radius: var(--grk-radius-control);
   padding: 12px;
-  background: var(--grk-accent);
+  background: var(--grk-surface);
 }
 
 .grk-settings h3 {
   margin: 0 0 8px;
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .grk-presets {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: var(--grk-border-width) solid var(--grk-border);
+  border-radius: var(--grk-radius-control);
+  background: color-mix(in srgb, var(--grk-border) 35%, var(--grk-surface));
 }
 
 .grk-preset,
 .grk-custom {
-  border: 2px solid var(--grk-border);
-  background: var(--grk-background);
-  min-height: 36px;
-  padding: 6px 10px;
-  font-family: var(--grk-font);
-  font-weight: 800;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  min-height: 32px;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grk-foreground);
   cursor: pointer;
 }
 
+.grk-preset {
+  flex: 1;
+}
+
 .grk-preset[aria-pressed="true"] {
-  background: var(--grk-foreground);
-  color: var(--grk-background);
+  background: var(--grk-background);
+  border-color: var(--grk-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .grk-custom {
-  width: 88px;
+  width: 84px;
   cursor: text;
-  font-family: var(--grk-font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.grk-custom:focus {
+  background: var(--grk-background);
+  border-color: var(--grk-border);
 }

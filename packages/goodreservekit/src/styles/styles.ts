@@ -1,6 +1,7 @@
 /** Prefixed class names. The stylesheet is injected with the package bundle. */
 export const styles = {
   root: "grk-root",
+  body: "grk-body",
   header: "grk-header",
   wordmark: "grk-wordmark",
   iconButton: "grk-iconButton",
@@ -24,11 +25,12 @@ export const styles = {
   actionsSingle: "grk-actionsSingle",
   button: "grk-button",
   primary: "grk-primary",
-  secondary: "grk-secondary",
   brand: "grk-brand",
   toastHost: "grk-toastHost",
   toastSlot: "grk-toastSlot",
   toast: "grk-toast",
+  toastError: "grk-toastError",
+  toastSuccess: "grk-toastSuccess",
   toastClose: "grk-toastClose",
   brandLogo: "grk-brandLogo",
   settings: "grk-settings",

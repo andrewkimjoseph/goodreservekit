@@ -7,7 +7,7 @@ import {
   pricePerTokenIn,
   tokensForDirection,
 } from "./format.js";
-import { brutalistTheme, mergeTheme } from "./theme/theme.js";
+import { flatTheme, mergeTheme } from "./theme/theme.js";
 
 describe("reserve formatting", () => {
   it("maps buy and sell onto the reserve pair", () => {
@@ -36,17 +36,18 @@ describe("reserve formatting", () => {
   });
 });
 
-describe("brutalist theme", () => {
-  it("keeps the Celo yellow accent and lets a host replace one token", () => {
-    const theme = brutalistTheme();
-    expect(theme.colors.accent).toBe("#FCFF52");
+describe("flat theme", () => {
+  it("keeps the Celo forest primary and lets a host replace one token", () => {
+    const theme = flatTheme();
     expect(theme.colors.primary).toBe("#476520");
-    expect(theme.radii.widget).toBe("0px");
-    const merged = mergeTheme(theme, { colors: { accent: "#ff00aa" } });
-    expect(merged.colors.accent).toBe("#ff00aa");
-    expect(merged.colors.primary).toBe("#476520");
+    expect(theme.colors.background).toBe("#ffffff");
+    expect(theme.radii.widget).toBe("12px");
+    expect(theme.radii.control).toBe("8px");
+    const merged = mergeTheme(theme, { colors: { primary: "#ff00aa" } });
+    expect(merged.colors.primary).toBe("#ff00aa");
+    expect(merged.colors.background).toBe("#ffffff");
     expect(merged.shadow).toBe(theme.shadow);
-    expect(theme.fontFamilySecondary).toContain("Sen");
+    expect(theme.fontFamily).toContain("Sen");
     expect(theme.toast.durationMs).toBe(4000);
     const timed = mergeTheme(theme, { toast: { durationMs: 1500 } });
     expect(timed.toast.durationMs).toBe(1500);

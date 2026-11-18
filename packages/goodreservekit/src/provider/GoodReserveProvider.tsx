@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import {
-  brutalistTheme,
+  flatTheme,
   type GoodReserveTheme,
   type GoodReserveThemeOverride,
 } from "../theme/theme.js";
@@ -36,7 +36,7 @@ export function GoodReserveProvider({
 }: GoodReserveProviderProps) {
   const tagKey = attributionTags?.join("|") ?? "";
   const resolvedTheme = useMemo(
-    () => (theme && isFullTheme(theme) ? theme : brutalistTheme(theme)),
+    () => (theme && isFullTheme(theme) ? theme : flatTheme(theme)),
     [theme],
   );
   const value = useMemo<GoodReserveConfig>(
@@ -51,5 +51,5 @@ export function GoodReserveProvider({
 }
 
 export function useGoodReserveConfig(): GoodReserveConfig {
-  return useContext(GoodReserveContext) ?? { theme: brutalistTheme() };
+  return useContext(GoodReserveContext) ?? { theme: flatTheme() };
 }

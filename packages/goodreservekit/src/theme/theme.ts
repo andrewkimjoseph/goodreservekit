@@ -1,9 +1,8 @@
 export interface GoodReserveThemeColors {
   background: string;
+  surface: string;
   foreground: string;
   muted: string;
-  accent: string;
-  accentForeground: string;
   primary: string;
   primaryForeground: string;
   danger: string;
@@ -28,8 +27,6 @@ export interface GoodReserveTheme {
   borderWidth: string;
   shadow: string;
   fontFamily: string;
-  fontFamilySecondary: string;
-  fontFamilyMono: string;
   toast: GoodReserveToastTheme;
 }
 
@@ -39,40 +36,38 @@ export type GoodReserveThemeOverride = {
   borderWidth?: string;
   shadow?: string;
   fontFamily?: string;
-  fontFamilySecondary?: string;
-  fontFamilyMono?: string;
   toast?: Partial<GoodReserveToastTheme>;
 };
 
-/** Black, white, Celo forest, and Celo yellow. Square corners and a hard shadow. */
-export function brutalistTheme(override?: GoodReserveThemeOverride): GoodReserveTheme {
+const FLAT_SHADOW =
+  "0 0 0 1px rgba(0,0,0,.06), 0 5px 15px rgba(0,0,0,.08), 0 15px 35px -5px rgba(25,28,33,.2)";
+
+/** White card, 1px borders, soft shadow, Celo forest green as the only brand color. */
+export function flatTheme(override?: GoodReserveThemeOverride): GoodReserveTheme {
   return mergeTheme(
     {
       colors: {
         background: "#ffffff",
-        foreground: "#000000",
-        muted: "#5c6152",
-        accent: "#FCFF52",
-        accentForeground: "#000000",
+        surface: "#f9fafb",
+        foreground: "#18181b",
+        muted: "#71717a",
         primary: "#476520",
         primaryForeground: "#ffffff",
-        danger: "#9b1c1c",
-        border: "#000000",
+        danger: "#b91c1c",
+        border: "#e4e4e7",
       },
       radii: {
-        widget: "0px",
-        control: "0px",
+        widget: "12px",
+        control: "8px",
       },
-      borderWidth: "3px",
-      shadow: "6px 6px 0 #000000",
-      fontFamily: '"Bricolage Grotesque", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif',
-      fontFamilySecondary: '"Sen", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif',
-      fontFamilyMono: '"IBM Plex Mono", ui-monospace, monospace',
+      borderWidth: "1px",
+      shadow: FLAT_SHADOW,
+      fontFamily: '"Sen", ui-sans-serif, system-ui, sans-serif',
       toast: {
         background: "#ffffff",
-        foreground: "#9b1c1c",
-        border: "#000000",
-        shadow: "4px 4px 0 #000000",
+        foreground: "#18181b",
+        border: "#e4e4e7",
+        shadow: "0 0 0 1px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.12)",
         durationMs: 4000,
         offset: "16px",
       },
@@ -99,10 +94,9 @@ export function mergeTheme(
 export function themeToStyle(theme: GoodReserveTheme): Record<string, string> {
   return {
     "--grk-background": theme.colors.background,
+    "--grk-surface": theme.colors.surface,
     "--grk-foreground": theme.colors.foreground,
     "--grk-muted": theme.colors.muted,
-    "--grk-accent": theme.colors.accent,
-    "--grk-accent-foreground": theme.colors.accentForeground,
     "--grk-primary": theme.colors.primary,
     "--grk-primary-foreground": theme.colors.primaryForeground,
     "--grk-danger": theme.colors.danger,
@@ -112,8 +106,6 @@ export function themeToStyle(theme: GoodReserveTheme): Record<string, string> {
     "--grk-border-width": theme.borderWidth,
     "--grk-shadow": theme.shadow,
     "--grk-font": theme.fontFamily,
-    "--grk-font-secondary": theme.fontFamilySecondary,
-    "--grk-font-mono": theme.fontFamilyMono,
     "--grk-toast-background": theme.toast.background,
     "--grk-toast-foreground": theme.toast.foreground,
     "--grk-toast-border": theme.toast.border,
