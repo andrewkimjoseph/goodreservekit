@@ -179,6 +179,20 @@ describe("GoodReserveWidget", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
+  it("opens slippage settings and applies the 1% preset", () => {
+    renderWidget();
+    const settings = screen.getByRole("button", { name: "Slippage settings, 0.5%" });
+    expect(settings.getAttribute("aria-expanded")).toBe("false");
+    expect(document.getElementById("grk-slippage")?.parentElement?.getAttribute("data-open")).toBe("false");
+
+    fireEvent.click(settings);
+    expect(settings.getAttribute("aria-expanded")).toBe("true");
+    expect(document.getElementById("grk-slippage")?.parentElement?.getAttribute("data-open")).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "1%" }));
+    expect(screen.getByRole("button", { name: "Slippage settings, 1%" })).toBeTruthy();
+  });
+
   it("exposes the same actions through the custom render prop", () => {
     render(
       <GoodReserveWidget.Custom>

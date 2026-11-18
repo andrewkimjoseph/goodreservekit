@@ -29,6 +29,8 @@ import {
 import "../styles/goodreserve.css";
 
 const SLIPPAGE_PRESETS = [0.1, 0.5, 1] as const;
+const SLIPPAGE_PANEL_ID = "grk-slippage";
+const DEFAULT_SLIPPAGE = 0.5;
 
 export interface GoodReserveWidgetProps {
   /** `buy` spends USDm for G$. `sell` spends G$ for USDm. */
@@ -203,17 +205,21 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
         </h2>
         <button
           type="button"
-          className={styles.iconButton}
-          aria-label="Transaction settings"
-          aria-pressed={settingsOpen}
+          className={styles.settingsButton}
+          aria-label={`Slippage settings, ${api.slippage}%`}
+          aria-expanded={settingsOpen}
+          aria-controls={SLIPPAGE_PANEL_ID}
           onClick={() => setSettingsOpen((open) => !open)}
         >
-          <GearIcon />
+          <SlippageIcon />
+          <span className={api.slippage === DEFAULT_SLIPPAGE ? undefined : styles.settingsValue}>
+            {api.slippage}%
+          </span>
         </button>
       </header>
 
-      {settingsOpen ? (
-        <div className={styles.settings}>
+      <div className={styles.settingsWrap} data-open={settingsOpen ? "true" : "false"}>
+        <div className={styles.settings} id={SLIPPAGE_PANEL_ID} inert={settingsOpen ? undefined : true}>
           <h3>Slippage tolerance</h3>
           <div className={styles.presets}>
             {SLIPPAGE_PRESETS.map((preset) => (
@@ -247,7 +253,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
             />
           </div>
         </div>
-      ) : null}
+      </div>
 
       <div className={styles.card}>
         <div className={styles.row}>
@@ -260,9 +266,6 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
           </div>
           <div className={styles.amountWrap}>
             <div className={styles.amountLine}>
-              <button type="button" className={styles.max} onClick={api.onMax} disabled={!api.connected}>
-                Max
-              </button>
               <input
                 className={styles.input}
                 inputMode="decimal"
@@ -274,7 +277,12 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
             </div>
           </div>
         </div>
-        <p className={styles.balance}>Balance: {api.connected ? api.balance.display : "—"}</p>
+        <div className={styles.balanceRow}>
+          <p className={styles.balance}>Balance: {api.connected ? api.balance.display : "—"}</p>
+          <button type="button" className={styles.max} onClick={api.onMax} disabled={!api.connected}>
+            Max
+          </button>
+        </div>
       </div>
 
       <div className={styles.flipWrap}>
@@ -408,16 +416,18 @@ function FlipIcon() {
   );
 }
 
-function GearIcon() {
+function SlippageIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
       <path
-        d="M9 1.5v2.2M9 14.3V16.5M1.5 9h2.2M14.3 9H16.5M3.4 3.4l1.6 1.6M13 13l1.6 1.6M14.6 3.4 13 5M5 13l-1.6 1.6"
+        d="M2 4.5h12M2 11.5h12"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       />
+      <circle cx="6" cy="4.5" r="1.75" fill="currentColor" />
+      <circle cx="10" cy="11.5" r="1.75" fill="currentColor" />
     </svg>
   );
 }
