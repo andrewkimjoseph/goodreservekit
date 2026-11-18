@@ -24,6 +24,7 @@ export const styles = {
   flip: "grk-flip",
   stats: "grk-stats",
   stat: "grk-stat",
+  quoteError: "grk-quoteError",
   actions: "grk-actions",
   actionsSingle: "grk-actionsSingle",
   button: "grk-button",

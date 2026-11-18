@@ -256,6 +256,13 @@
   text-align: right;
 }
 
+.grk-quoteError {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grk-danger);
+}
+
 .grk-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -5,8 +5,12 @@ export {
   GoodReserveView,
   useGoodReserveWidget,
 } from "./widget/GoodReserveWidget.js";
-export type { GoodReserveWidgetApi, GoodReserveWidgetProps } from "./widget/GoodReserveWidget.js";
-export { useGoodReserveQuote } from "./hooks/useGoodReserveQuote.js";
+export type {
+  GoodReserveWidgetApi,
+  GoodReserveWidgetMode,
+  GoodReserveWidgetProps,
+} from "./widget/GoodReserveWidget.js";
+export { useGoodReserveQuote, useStandaloneGoodReserveQuote } from "./hooks/useGoodReserveQuote.js";
 export type { ReserveQuote, UseGoodReserveQuoteArgs } from "./hooks/useGoodReserveQuote.js";
 export { usePrepareGoodReserveSwap } from "./hooks/usePrepareGoodReserveSwap.js";
 export type { PrepareGoodReserveSwapArgs } from "./hooks/usePrepareGoodReserveSwap.js";

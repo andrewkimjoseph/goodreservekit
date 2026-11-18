@@ -7,6 +7,8 @@ import {
 
 export interface GoodReserveConfig {
   attributionTags?: string[];
+  /** Public Celo HTTP endpoint for quote-only mode. Omit to use viem's default. */
+  rpcUrl?: string;
   theme: GoodReserveTheme;
 }
 
@@ -15,6 +17,8 @@ const GoodReserveContext = createContext<GoodReserveConfig | null>(null);
 export interface GoodReserveProviderProps {
   /** Extra ERC-8021 codes appended after `celina` on approve and swap calldata. */
   attributionTags?: string[];
+  /** Public Celo HTTP endpoint used by quote-only mode. */
+  rpcUrl?: string;
   theme?: GoodReserveTheme | GoodReserveThemeOverride;
   children: ReactNode;
 }
@@ -31,6 +35,7 @@ function isFullTheme(theme: GoodReserveTheme | GoodReserveThemeOverride): theme 
 
 export function GoodReserveProvider({
   attributionTags,
+  rpcUrl,
   theme,
   children,
 }: GoodReserveProviderProps) {
@@ -42,9 +47,10 @@ export function GoodReserveProvider({
   const value = useMemo<GoodReserveConfig>(
     () => ({
       attributionTags: tagKey ? tagKey.split("|") : undefined,
+      rpcUrl,
       theme: resolvedTheme,
     }),
-    [tagKey, resolvedTheme],
+    [tagKey, rpcUrl, resolvedTheme],
   );
 
   return <GoodReserveContext.Provider value={value}>{children}</GoodReserveContext.Provider>;

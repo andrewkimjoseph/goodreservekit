@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import type { GoodDollarReserveAmountSide } from "@cnvlabskoxyz/celina-sdk/gooddollar-reserve";
 import { parsePositiveAmount, type SwapDirection, tokensForDirection } from "../format.js";
+import type { GoodReserveBrowserClient } from "./useGoodReserveClient.js";
 import { useGoodReserveClient } from "./useGoodReserveClient.js";
+import { useStandaloneReserveClient } from "./useStandaloneReserveClient.js";
 
 const QUOTE_DEBOUNCE_MS = 300;
 
@@ -20,12 +22,9 @@ export interface UseGoodReserveQuoteArgs {
   amountSide?: GoodDollarReserveAmountSide;
 }
 
-export function useGoodReserveQuote({
-  amount,
-  direction,
-  amountSide = "in",
-}: UseGoodReserveQuoteArgs) {
-  const client = useGoodReserveClient();
+type QuoteClient = Pick<GoodReserveBrowserClient, "getReserveQuote"> | null;
+
+function useReserveQuote(client: QuoteClient, { amount, direction, amountSide = "in" }: UseGoodReserveQuoteArgs) {
   const parsed = parsePositiveAmount(amount);
   const { tokenIn, tokenOut } = tokensForDirection(direction);
   const [quote, setQuote] = useState<ReserveQuote | null>(null);
@@ -74,4 +73,15 @@ export function useGoodReserveQuote({
   }, [amountSide, client, direction, parsed, tokenIn, tokenOut]);
 
   return { quote, isLoading, error, tokenIn, tokenOut, amount: parsed };
+}
+
+export function useGoodReserveQuote(args: UseGoodReserveQuoteArgs) {
+  const client = useGoodReserveClient();
+  return useReserveQuote(client, args);
+}
+
+/** Debounced G$ ↔ USDm quote. Does not need WagmiProvider or a connected wallet. */
+export function useStandaloneGoodReserveQuote(args: UseGoodReserveQuoteArgs) {
+  const client = useStandaloneReserveClient();
+  return useReserveQuote(client, args);
 }

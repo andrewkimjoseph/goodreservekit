@@ -16,9 +16,19 @@ import { GoodReserveProvider, GoodReserveWidget, flatTheme } from "@cnvlabskoxyz
 
 `defaultDirection="buy"` spends USDm to receive G$. `"sell"` spends G$ to receive USDm.
 
+## Quote-only mode
+
+`mode="quote"` is the same widget with the wallet, balance, Max, slippage, and swap controls removed. It does not need a connected wallet, `WagmiProvider`, or `RainbowKitProvider`.
+
+```tsx
+<GoodReserveWidget mode="quote" defaultDirection="buy" />
+```
+
+Quotes use a public Celo RPC. Pass `rpcUrl` on `GoodReserveProvider` to use your own endpoint. `useStandaloneGoodReserveQuote({ amount, direction })` is the headless version, and `GoodReserveWidget.Custom mode="quote"` exposes the same state. Quotes are not attributed. ERC-8021 tags are appended only to approve and swap calldata in swap mode.
+
 ## Headless hooks
 
-`useGoodReserveQuote`, `usePrepareGoodReserveSwap`, and `useGoodReserveSwap` are exported for custom UI. `GoodReserveWidget.Custom` is a render prop with the same state the built-in widget uses.
+`useGoodReserveQuote`, `useStandaloneGoodReserveQuote`, `usePrepareGoodReserveSwap`, and `useGoodReserveSwap` are exported for custom UI. `GoodReserveWidget.Custom` is a render prop with the same state the built-in widget uses. Swap hooks still need `WagmiProvider`.
 
 ## Theme
 

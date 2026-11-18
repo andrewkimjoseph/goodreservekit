@@ -17,7 +17,7 @@ import {
   tokensForDirection,
   type SwapDirection,
 } from "../format.js";
-import { useGoodReserveQuote } from "../hooks/useGoodReserveQuote.js";
+import { useGoodReserveQuote, useStandaloneGoodReserveQuote } from "../hooks/useGoodReserveQuote.js";
 import { useGoodReserveSwap, type GoodReserveSwapStep } from "../hooks/useGoodReserveSwap.js";
 import { useReserveBalances, type ReserveBalance } from "../hooks/useReserveBalances.js";
 import { useGoodReserveConfig } from "../provider/GoodReserveProvider.js";
@@ -33,8 +33,13 @@ import "../styles/goodreserve.css";
 const SLIPPAGE_PRESETS = [0.1, 0.5, 1] as const;
 const SLIPPAGE_PANEL_ID = "grk-slippage";
 const DEFAULT_SLIPPAGE = 0.5;
+const ZERO_BALANCE: ReserveBalance = { raw: 0n, formatted: "0", display: "0" };
+
+export type GoodReserveWidgetMode = "swap" | "quote";
 
 export interface GoodReserveWidgetProps {
+  /** `swap` connects a wallet and sends the reserve swap. `quote` only shows the price. */
+  mode?: GoodReserveWidgetMode;
   /** `buy` spends USDm for G$. `sell` spends G$ for USDm. */
   defaultDirection?: SwapDirection;
   /** Show the CNV Labs credit. Defaults to true. */
@@ -137,6 +142,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   const price = expected ? pricePerTokenIn(amount, expected) : null;
 
   return {
+    mode: "swap",
     defaultDirection,
     showBranding,
     className,
@@ -188,6 +194,59 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   };
 }
 
+function useQuoteWidgetApi(props: GoodReserveWidgetProps): GoodReserveWidgetApi {
+  const { defaultDirection = "buy", showBranding = true, className, style } = props;
+  const [direction, setDirection] = useState<SwapDirection>(defaultDirection);
+  const [amount, setAmount] = useState("");
+  const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
+  const quoteState = useStandaloneGoodReserveQuote({ amount, direction });
+  const { tokenIn, tokenOut } = tokensForDirection(direction);
+  const expected = quoteState.quote?.expectedOut;
+  const price = expected ? pricePerTokenIn(amount, expected) : null;
+
+  return {
+    mode: "quote",
+    defaultDirection,
+    showBranding,
+    className,
+    style,
+    direction,
+    setDirection,
+    amount,
+    setAmount,
+    slippage,
+    setSlippage,
+    tokenIn,
+    tokenOut,
+    quoteText: expected ? formatDisplayAmount(expected) : "0",
+    priceText: price
+      ? `${price} ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`
+      : `0 ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`,
+    minimumText: expected
+      ? `${minimumReceived(expected, slippage) ?? "0"} ${displaySymbol(tokenOut)}`
+      : `0 ${displaySymbol(tokenOut)}`,
+    balance: ZERO_BALANCE,
+    outputBalance: ZERO_BALANCE,
+    isQuoteLoading: quoteState.isLoading,
+    quoteError: quoteState.error,
+    step: "idle",
+    swapError: null,
+    isBusy: false,
+    connected: false,
+    wrongChain: false,
+    canSwap: false,
+    actionLabel: quoteState.isLoading ? "Quoting" : "Enter amount",
+    onConnect: () => {},
+    onSwitchChain: () => {},
+    onMax: () => {},
+    onFlip: () => {
+      setAmount("");
+      setDirection((current) => (current === "buy" ? "sell" : "buy"));
+    },
+    onSwap: () => {},
+  };
+}
+
 function TokenFace({ symbol }: { symbol: string }) {
   const Icon = symbol === "GoodDollar" ? GoodDollarIcon : USDmIcon;
   return <Icon className={styles.badge} size={36} />;
@@ -195,6 +254,7 @@ function TokenFace({ symbol }: { symbol: string }) {
 
 export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
   const { theme } = useGoodReserveConfig();
+  const quoteMode = api.mode === "quote";
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [customSlippage, setCustomSlippage] = useState("");
   const customActive = !SLIPPAGE_PRESETS.some((preset) => preset === api.slippage);
@@ -209,21 +269,24 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
         <h2 className={styles.wordmark}>
           <GoodReserveLogo className={styles.goodreserveLogo} />
         </h2>
-        <button
-          type="button"
-          className={styles.settingsButton}
-          aria-label={`Slippage settings, ${api.slippage}%`}
-          aria-expanded={settingsOpen}
-          aria-controls={SLIPPAGE_PANEL_ID}
-          onClick={() => setSettingsOpen((open) => !open)}
-        >
-          <SlippageIcon />
-          <span className={api.slippage === DEFAULT_SLIPPAGE ? undefined : styles.settingsValue}>
-            {api.slippage}%
-          </span>
-        </button>
+        {quoteMode ? null : (
+          <button
+            type="button"
+            className={styles.settingsButton}
+            aria-label={`Slippage settings, ${api.slippage}%`}
+            aria-expanded={settingsOpen}
+            aria-controls={SLIPPAGE_PANEL_ID}
+            onClick={() => setSettingsOpen((open) => !open)}
+          >
+            <SlippageIcon />
+            <span className={api.slippage === DEFAULT_SLIPPAGE ? undefined : styles.settingsValue}>
+              {api.slippage}%
+            </span>
+          </button>
+        )}
       </header>
 
+      {quoteMode ? null : (
       <div className={styles.settingsWrap} data-open={settingsOpen ? "true" : "false"}>
         <div className={styles.settingsClip}>
           <div className={styles.settings} id={SLIPPAGE_PANEL_ID} inert={settingsOpen ? undefined : true}>
@@ -272,6 +335,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
           </div>
         </div>
       </div>
+      )}
 
       <div className={styles.card}>
         <div className={styles.row}>
@@ -287,7 +351,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
               <input
                 className={styles.input}
                 inputMode="decimal"
-                aria-label={`Amount of ${displaySymbol(api.tokenIn)} to swap`}
+                aria-label={`Amount of ${displaySymbol(api.tokenIn)} to ${quoteMode ? "quote" : "swap"}`}
                 placeholder="0"
                 value={api.amount}
                 onChange={(event) => api.setAmount(event.target.value.replace(/[^\d.]/g, ""))}
@@ -295,12 +359,14 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
             </div>
           </div>
         </div>
-        <div className={styles.balanceRow}>
-          <p className={styles.balance}>Balance: {api.connected ? api.balance.display : "—"}</p>
-          <button type="button" className={styles.max} onClick={api.onMax} disabled={!api.connected}>
-            Max
-          </button>
-        </div>
+        {quoteMode ? null : (
+          <div className={styles.balanceRow}>
+            <p className={styles.balance}>Balance: {api.connected ? api.balance.display : "—"}</p>
+            <button type="button" className={styles.max} onClick={api.onMax} disabled={!api.connected}>
+              Max
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={styles.flipWrap}>
@@ -324,24 +390,32 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
             </output>
           </div>
         </div>
-        <p className={styles.balance}>Balance: {api.connected ? api.outputBalance.display : "—"}</p>
+        {quoteMode ? null : (
+          <p className={styles.balance}>Balance: {api.connected ? api.outputBalance.display : "—"}</p>
+        )}
       </div>
 
       <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span>Slippage tolerance</span>
-          <b>{api.slippage}%</b>
-        </div>
+        {quoteMode ? null : (
+          <div className={styles.stat}>
+            <span>Slippage tolerance</span>
+            <b>{api.slippage}%</b>
+          </div>
+        )}
         <div className={styles.stat}>
           <span>Price</span>
           <b>{api.priceText}</b>
         </div>
-        <div className={styles.stat}>
-          <span>Minimum received</span>
-          <b>{api.minimumText}</b>
-        </div>
+        {quoteMode ? null : (
+          <div className={styles.stat}>
+            <span>Minimum received</span>
+            <b>{api.minimumText}</b>
+          </div>
+        )}
       </div>
+      {quoteMode && api.quoteError ? <p className={styles.quoteError}>{api.quoteError}</p> : null}
 
+      {quoteMode ? null : (
       <div className={`${styles.actions} ${styles.actionsSingle}`}>
         <button
           type="button"
@@ -356,6 +430,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
           {api.actionLabel}
         </button>
       </div>
+      )}
       </div>
       {api.showBranding ? (
         <footer className={styles.brand}>
@@ -367,7 +442,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
   );
 }
 
-export function GoodReserveWidget({ renderToast, ...props }: GoodReserveWidgetProps) {
+function SwapWidget({ renderToast, ...props }: GoodReserveWidgetProps) {
   const api = useGoodReserveWidget(props);
   return (
     <>
@@ -377,7 +452,17 @@ export function GoodReserveWidget({ renderToast, ...props }: GoodReserveWidgetPr
   );
 }
 
-function CustomWidget({
+function QuoteWidget(props: GoodReserveWidgetProps) {
+  const api = useQuoteWidgetApi(props);
+  return <GoodReserveView api={api} />;
+}
+
+export function GoodReserveWidget({ mode = "swap", ...props }: GoodReserveWidgetProps) {
+  if (mode === "quote") return <QuoteWidget key="quote" {...props} mode="quote" />;
+  return <SwapWidget key="swap" {...props} mode="swap" />;
+}
+
+function SwapCustom({
   children,
   renderToast,
   ...props
@@ -389,6 +474,22 @@ function CustomWidget({
       <ReserveToasts step={api.step} swapError={api.swapError} renderToast={renderToast} />
     </>
   );
+}
+
+function QuoteCustom({
+  children,
+  ...props
+}: GoodReserveWidgetProps & { children: (api: GoodReserveWidgetApi) => ReactNode }) {
+  const api = useQuoteWidgetApi(props);
+  return children(api);
+}
+
+function CustomWidget({
+  mode = "swap",
+  ...props
+}: GoodReserveWidgetProps & { children: (api: GoodReserveWidgetApi) => ReactNode }) {
+  if (mode === "quote") return <QuoteCustom key="quote" {...props} mode="quote" />;
+  return <SwapCustom key="swap" {...props} mode="swap" />;
 }
 
 function ReserveToasts({
