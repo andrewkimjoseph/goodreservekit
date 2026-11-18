@@ -10,6 +10,7 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   injectStyle: true,
+  loader: { ".png": "dataurl" },
   external: [
     "react",
     "react-dom",

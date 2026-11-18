@@ -77,6 +77,7 @@ describe("GoodReserveWidget", () => {
     renderWidget();
     fireEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
     expect(openConnectModal).toHaveBeenCalledOnce();
+    expect(screen.getByRole("img", { name: "GoodReserve" })).toBeTruthy();
     expect(screen.getByText("GoodReserve by")).toBeTruthy();
     expect(screen.getByRole("img", { name: "CNV Labs KO XYZ" })).toBeTruthy();
   });

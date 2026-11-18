@@ -4,6 +4,7 @@ import { celo } from "viem/chains";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CnvLabsLogo } from "../icons/CnvLabsLogo.js";
+import { GoodReserveLogo } from "../icons/GoodReserveLogo.js";
 import { GoodDollarIcon } from "../icons/GoodDollarIcon.js";
 import { USDmIcon } from "../icons/USDmIcon.js";
 import {
@@ -206,7 +207,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       <div className={styles.body}>
       <header className={styles.header}>
         <h2 className={styles.wordmark}>
-          Good<span>Reserve</span>
+          <GoodReserveLogo className={styles.goodreserveLogo} />
         </h2>
         <button
           type="button"

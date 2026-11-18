@@ -4,6 +4,7 @@ export const styles = {
   body: "grk-body",
   header: "grk-header",
   wordmark: "grk-wordmark",
+  goodreserveLogo: "grk-goodreserveLogo",
   settingsButton: "grk-settingsButton",
   settingsValue: "grk-settingsValue",
   card: "grk-card",
