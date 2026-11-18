@@ -186,7 +186,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
 
 function TokenFace({ symbol }: { symbol: string }) {
   const Icon = symbol === "GoodDollar" ? GoodDollarIcon : USDmIcon;
-  return <Icon className={styles.badge} size={42} />;
+  return <Icon className={styles.badge} size={36} />;
 }
 
 export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {

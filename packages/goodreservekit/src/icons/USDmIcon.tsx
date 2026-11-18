@@ -4,7 +4,7 @@ import { usdmSvg } from "./usdmMarkup.js";
 type IconProps = HTMLAttributes<HTMLSpanElement> & { size?: number };
 
 /** USDm mark from the CNV website token artwork. */
-export function USDmIcon({ size = 42, ...props }: IconProps) {
+export function USDmIcon({ size = 36, ...props }: IconProps) {
   const uid = useId().replace(/:/g, "");
   const markup = usdmSvg.replaceAll("__GRK__", `${uid}-`);
 

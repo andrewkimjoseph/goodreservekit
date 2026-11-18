@@ -3,7 +3,7 @@ import { useId, type SVGProps } from "react";
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
 /** GoodDollar mark from the CNV website token artwork. */
-export function GoodDollarIcon({ size = 42, ...props }: IconProps) {
+export function GoodDollarIcon({ size = 36, ...props }: IconProps) {
   const uid = useId().replace(/:/g, "");
   const clip = `${uid}-clip`;
   const frame = `${uid}-frame`;
@@ -11,11 +11,10 @@ export function GoodDollarIcon({ size = 42, ...props }: IconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
       viewBox="110 110 780 780"
       aria-hidden="true"
       {...props}
+      style={{ width: size, height: size, ...props.style }}
     >
       <defs>
         <clipPath id={clip}>
