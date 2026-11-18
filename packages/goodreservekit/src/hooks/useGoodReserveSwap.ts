@@ -24,10 +24,10 @@ function failureMessage(error: unknown): string {
     lower.includes("user denied") ||
     lower.includes("rejected the request")
   ) {
-    return "You rejected the request in your wallet. Nothing was swapped.";
+    return "Swap rejected.";
   }
   const first = raw.split("\n").find((line) => line.trim().length > 0)?.trim() ?? "Swap failed";
-  if (first.length > 180) return "The swap did not complete. Nothing was swapped.";
+  if (first.length > 180) return "Swap failed.";
   return first;
 }
 
