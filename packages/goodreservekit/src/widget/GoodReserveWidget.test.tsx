@@ -1,22 +1,42 @@
+import { useEffect, useState } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GoodReserveProvider } from "../provider/GoodReserveProvider.js";
 import { GoodReserveWidget } from "./GoodReserveWidget.js";
 
-const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient, refetchBalances } =
+const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient, refetchBalances, connect, isAuthorized, accountListeners } =
   vi.hoisted(() => ({
     openConnectModal: vi.fn(),
     getReserveQuote: vi.fn(),
     prepareReserveSwap: vi.fn(),
     sendTransactionAsync: vi.fn(),
     refetchBalances: vi.fn(async () => ({})),
+    connect: vi.fn(),
+    isAuthorized: vi.fn(async () => false),
+    accountListeners: new Set<() => void>(),
     publicClient: {
       waitForTransactionReceipt: vi.fn(async () => ({ status: "success" })),
     },
   }));
 
+vi.mock("wagmi/connectors", () => ({
+  injected: () => () => ({ isAuthorized }),
+}));
+
 vi.mock("wagmi", () => ({
-  useAccount: () => accountState,
+  useAccount: () => {
+    const [, bump] = useState(0);
+    useEffect(() => {
+      const listener = () => bump((value) => value + 1);
+      accountListeners.add(listener);
+      return () => {
+        accountListeners.delete(listener);
+      };
+    }, []);
+    return accountState;
+  },
+  useConfig: () => ({}),
+  useConnect: () => ({ connect }),
   usePublicClient: () => publicClient,
   useSendTransaction: () => ({ sendTransactionAsync }),
   useSwitchChain: () => ({ switchChain: vi.fn() }),
@@ -46,9 +66,14 @@ vi.mock("@cnvlabskoxyz/celina-sdk/onchain-stats", () => ({
   reportCelinaOnchainTxn: vi.fn(),
 }));
 
-let accountState: { address?: `0x${string}`; chainId?: number } = {};
+let accountState: { address?: `0x${string}`; chainId?: number; status?: string } = { status: "disconnected" };
 
-function renderWidget(props?: { showBranding?: boolean; defaultDirection?: "buy" | "sell" }) {
+function publishAccount(next: typeof accountState) {
+  accountState = next;
+  accountListeners.forEach((listener) => listener());
+}
+
+function renderWidget(props?: { showBranding?: boolean; defaultDirection?: "buy" | "sell"; detectInjected?: boolean }) {
   return render(
     <GoodReserveProvider attributionTags={["demo"]}>
       <GoodReserveWidget {...props} />
@@ -58,7 +83,18 @@ function renderWidget(props?: { showBranding?: boolean; defaultDirection?: "buy"
 
 describe("GoodReserveWidget", () => {
   beforeEach(() => {
-    accountState = {};
+    accountState = { status: "disconnected" };
+    delete window.ethereum;
+    isAuthorized.mockReset();
+    isAuthorized.mockResolvedValue(false);
+    connect.mockReset();
+    connect.mockImplementation(() => {
+      publishAccount({
+        address: "0x0000000000000000000000000000000000000001",
+        chainId: 42220,
+        status: "connected",
+      });
+    });
     openConnectModal.mockReset();
     refetchBalances.mockClear();
     getReserveQuote.mockReset();
@@ -71,6 +107,48 @@ describe("GoodReserveWidget", () => {
       amountSide: "in",
     });
     prepareReserveSwap.mockReset();
+  });
+
+  it("adopts an injected wallet that is already connected", async () => {
+    window.ethereum = { request: vi.fn() };
+    isAuthorized.mockResolvedValue(true);
+    renderWidget();
+    expect(await screen.findByRole("button", { name: "Enter amount" })).toBeTruthy();
+    expect(connect).toHaveBeenCalledOnce();
+    expect(openConnectModal).not.toHaveBeenCalled();
+  });
+
+  it("does not connect an injected wallet that is not already authorized", async () => {
+    window.ethereum = { request: vi.fn() };
+    renderWidget();
+    await waitFor(() => expect(isAuthorized).toHaveBeenCalled());
+    expect(connect).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Connect wallet" })).toBeTruthy();
+  });
+
+  it("waits out wagmi reconnecting and skips the check when already connected or disabled", async () => {
+    window.ethereum = { request: vi.fn() };
+    isAuthorized.mockResolvedValue(true);
+    accountState = { status: "reconnecting" };
+    const { unmount } = renderWidget();
+    await Promise.resolve();
+    expect(isAuthorized).not.toHaveBeenCalled();
+    unmount();
+
+    accountState = {
+      address: "0x0000000000000000000000000000000000000001",
+      chainId: 42220,
+      status: "connected",
+    };
+    const connected = renderWidget();
+    await Promise.resolve();
+    expect(connect).not.toHaveBeenCalled();
+    connected.unmount();
+
+    accountState = { status: "disconnected" };
+    renderWidget({ detectInjected: false });
+    await Promise.resolve();
+    expect(isAuthorized).not.toHaveBeenCalled();
   });
 
   it("asks RainbowKit to connect when no wallet is connected", () => {

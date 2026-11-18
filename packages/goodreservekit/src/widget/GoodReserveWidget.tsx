@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { parseUnits } from "viem";
 import { celo } from "viem/chains";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useAccount, useConfig, useConnect, useSwitchChain } from "wagmi";
+import { injected } from "wagmi/connectors";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CnvLabsLogo } from "../icons/CnvLabsLogo.js";
 import { GoodReserveLogo } from "../icons/GoodReserveLogo.js";
@@ -54,6 +55,11 @@ export interface GoodReserveWidgetProps {
   defaultDirection?: SwapDirection;
   /** Show the CNV Labs credit. Defaults to true. */
   showBranding?: boolean;
+  /**
+   * In swap mode, adopt an injected wallet that is already connected.
+   * This reads `eth_accounts` and never prompts. Defaults to true.
+   */
+  detectInjected?: boolean;
   /** Replace the default stamp. The host still receives tone, message, and dismiss. */
   renderToast?: (toast: GoodReserveToastPayload) => ReactNode;
   className?: string;
@@ -91,13 +97,16 @@ export interface GoodReserveWidgetApi extends GoodReserveWidgetProps {
 }
 
 export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserveWidgetApi {
-  const { defaultDirection = "buy", showBranding = true, className, style } = props;
+  const { defaultDirection = "buy", showBranding = true, detectInjected = true, className, style } = props;
   const [direction, setDirection] = useState<SwapDirection>(defaultDirection);
   const [amount, setAmount] = useState("");
   const [slippage, setSlippage] = useState(0.5);
-  const { address, chainId } = useAccount();
+  const { address, chainId, status } = useAccount();
   const { switchChain } = useSwitchChain();
+  const { connect } = useConnect();
+  const config = useConfig();
   const { openConnectModal } = useConnectModal();
+  const detected = useRef(false);
   const balances = useReserveBalances();
   const quoteState = useGoodReserveQuote({ amount, direction });
   const unitQuote = useGoodReserveQuote({ amount: ONE_USDM, direction: "buy" });
@@ -114,6 +123,32 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     if (swapState.step !== "done") return;
     void balances.refetch();
   }, [balances.refetch, swapState.step]);
+
+  useEffect(() => {
+    if (!detectInjected || detected.current) return;
+    if (address || status === "connecting" || status === "reconnecting") return;
+    if (typeof window === "undefined" || !window.ethereum) return;
+    detected.current = true;
+    const connector = injected({
+      shimDisconnect: false,
+      target: () => {
+        const provider = window.ethereum;
+        if (!provider) return undefined;
+        return { id: "injected", name: "Injected", provider };
+      },
+    });
+    let cancelled = false;
+    void connector(config as never)
+      .isAuthorized()
+      .then((authorized) => {
+        if (!cancelled && authorized) connect({ connector });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      detected.current = false;
+    };
+  }, [address, config, connect, detectInjected, status]);
 
   const insufficient = useMemo(() => {
     const parsed = quoteState.amount;
@@ -155,6 +190,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     mode: "swap",
     defaultDirection,
     showBranding,
+    detectInjected,
     className,
     style,
     direction,

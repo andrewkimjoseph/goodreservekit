@@ -16,6 +16,8 @@ import { GoodReserveProvider, GoodReserveWidget, flatTheme } from "@cnvlabskoxyz
 
 `defaultDirection="buy"` spends USDm to receive G$. `"sell"` spends G$ to receive USDm.
 
+Swap mode checks for an injected wallet that is already connected (`eth_accounts` only, so it never opens a prompt). If one is connected, the widget uses it and skips "Connect wallet". Otherwise the button still opens RainbowKit. Pass `detectInjected={false}` to skip the check. Quote mode does not look for a wallet.
+
 ## Quote-only mode
 
 `mode="quote"` is the same widget with the wallet, balance, Max, slippage, and swap controls removed. It does not need a connected wallet, `WagmiProvider`, or `RainbowKitProvider`.

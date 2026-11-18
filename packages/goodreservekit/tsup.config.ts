@@ -16,6 +16,7 @@ export default defineConfig({
     "react-dom",
     "react/jsx-runtime",
     "wagmi",
+    "wagmi/connectors",
     "viem",
     "viem/chains",
     "@rainbow-me/rainbowkit",
