@@ -303,7 +303,7 @@
 .grk-toastHost {
   position: fixed;
   z-index: 80;
-  top: var(--grk-toast-offset);
+  bottom: var(--grk-toast-offset);
   left: 0;
   right: 0;
   display: flex;
@@ -317,7 +317,7 @@
   width: max-content;
   max-width: min(100%, 640px);
   pointer-events: auto;
-  transform: translateY(-120%);
+  transform: translateY(120%);
   transition: transform 220ms ease-out;
 }
 

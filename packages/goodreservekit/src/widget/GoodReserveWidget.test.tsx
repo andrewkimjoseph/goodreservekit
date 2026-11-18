@@ -244,13 +244,11 @@ describe("GoodReserveWidget", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Swap" }));
 
     const toast = await screen.findByRole("alert");
-    expect(toast.textContent).toContain("You rejected the request in your wallet. Nothing was swapped.");
-    expect(document.querySelector(".grk-root")?.textContent).not.toContain("Nothing was swapped");
+    expect(toast.textContent).toContain("Swap rejected.");
+    expect(document.querySelector(".grk-root")?.textContent).not.toContain("Swap rejected.");
     expect(toast.querySelector(".grk-toastLogo")).not.toBeNull();
     expect(toast.querySelector(".grk-toastMark")).toBeNull();
-    expect(toast.querySelector("p")?.getAttribute("title")).toBe(
-      "You rejected the request in your wallet. Nothing was swapped.",
-    );
+    expect(toast.querySelector("p")?.getAttribute("title")).toBe("Swap rejected.");
   });
 
   it("drops the toast logo when branding is off", async () => {
