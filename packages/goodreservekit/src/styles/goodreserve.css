@@ -402,7 +402,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 5px;
   padding: 10px 20px;
   background: var(--grk-surface);
   border-top: var(--grk-border-width) solid var(--grk-border);
