@@ -12,7 +12,6 @@ import {
   formatAmountInput,
   formatDisplayAmount,
   minimumReceived,
-  pricePerTokenIn,
   sanitizeSlippageInput,
   tokensForDirection,
   type SwapDirection,
@@ -34,6 +33,17 @@ const SLIPPAGE_PRESETS = [0.1, 0.5, 1] as const;
 const SLIPPAGE_PANEL_ID = "grk-slippage";
 const DEFAULT_SLIPPAGE = 0.5;
 const ZERO_BALANCE: ReserveBalance = { raw: 0n, formatted: "0", display: "0" };
+const ONE_USDM = "1";
+
+function priceForOneUsdm(
+  expectedOut: string | undefined,
+  isLoading: boolean,
+  error: string | null,
+): string {
+  if (expectedOut) return `${formatDisplayAmount(expectedOut)} G$ per 1 USDm`;
+  if (error && !isLoading) return "—";
+  return "…";
+}
 
 export type GoodReserveWidgetMode = "swap" | "quote";
 
@@ -90,6 +100,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   const { openConnectModal } = useConnectModal();
   const balances = useReserveBalances();
   const quoteState = useGoodReserveQuote({ amount, direction });
+  const unitQuote = useGoodReserveQuote({ amount: ONE_USDM, direction: "buy" });
   const swapState = useGoodReserveSwap();
   const { tokenIn, tokenOut } = tokensForDirection(direction);
   const balance = direction === "buy" ? balances.usdm : balances.goodDollar;
@@ -139,7 +150,6 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   else if (quoteState.quote) actionLabel = "Swap";
 
   const expected = quoteState.quote?.expectedOut;
-  const price = expected ? pricePerTokenIn(amount, expected) : null;
 
   return {
     mode: "swap",
@@ -156,9 +166,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     tokenIn,
     tokenOut,
     quoteText: expected ? formatDisplayAmount(expected) : "0",
-    priceText: price
-      ? `${price} ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`
-      : `0 ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`,
+    priceText: priceForOneUsdm(unitQuote.quote?.expectedOut, unitQuote.isLoading, unitQuote.error),
     minimumText: expected
       ? `${minimumReceived(expected, slippage) ?? "0"} ${displaySymbol(tokenOut)}`
       : `0 ${displaySymbol(tokenOut)}`,
@@ -200,9 +208,9 @@ function useQuoteWidgetApi(props: GoodReserveWidgetProps): GoodReserveWidgetApi 
   const [amount, setAmount] = useState("");
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
   const quoteState = useStandaloneGoodReserveQuote({ amount, direction });
+  const unitQuote = useStandaloneGoodReserveQuote({ amount: ONE_USDM, direction: "buy" });
   const { tokenIn, tokenOut } = tokensForDirection(direction);
   const expected = quoteState.quote?.expectedOut;
-  const price = expected ? pricePerTokenIn(amount, expected) : null;
 
   return {
     mode: "quote",
@@ -219,16 +227,14 @@ function useQuoteWidgetApi(props: GoodReserveWidgetProps): GoodReserveWidgetApi 
     tokenIn,
     tokenOut,
     quoteText: expected ? formatDisplayAmount(expected) : "0",
-    priceText: price
-      ? `${price} ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`
-      : `0 ${displaySymbol(tokenOut)} per ${displaySymbol(tokenIn)}`,
+    priceText: priceForOneUsdm(unitQuote.quote?.expectedOut, unitQuote.isLoading, unitQuote.error),
     minimumText: expected
       ? `${minimumReceived(expected, slippage) ?? "0"} ${displaySymbol(tokenOut)}`
       : `0 ${displaySymbol(tokenOut)}`,
     balance: ZERO_BALANCE,
     outputBalance: ZERO_BALANCE,
     isQuoteLoading: quoteState.isLoading,
-    quoteError: quoteState.error,
+    quoteError: quoteState.error ?? (amount.trim() ? null : unitQuote.error),
     step: "idle",
     swapError: null,
     isBusy: false,

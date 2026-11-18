@@ -65,7 +65,7 @@ describe("GoodReserveWidget quote mode", () => {
     await waitFor(() => {
       expect(screen.getByLabelText("Expected output").textContent).toMatch(/8.?000/);
     });
-    expect(screen.getByText(/G\$ per USDm/)).toBeTruthy();
+    expect(screen.getByText(/8.?000 G\$ per 1 USDm/)).toBeTruthy();
     expect(getReserveQuote).toHaveBeenCalledWith("USDm", "GoodDollar", "1", { amountSide: "in" });
     expect(screen.queryByRole("alert")).toBeNull();
   });
@@ -73,11 +73,13 @@ describe("GoodReserveWidget quote mode", () => {
   it("clears the typed amount when the direction flips", async () => {
     render(<GoodReserveWidget mode="quote" />);
     fireEvent.change(screen.getByLabelText("Amount of USDm to quote"), { target: { value: "12.5" } });
-    await screen.findByText(/G\$ per USDm/);
+    await screen.findByText(/G\$ per 1 USDm/);
     fireEvent.click(screen.getByRole("button", { name: "Flip swap direction" }));
 
     const input = screen.getByLabelText("Amount of G$ to quote") as HTMLInputElement;
     expect(input.value).toBe("");
+    expect(screen.getByText(/G\$ per 1 USDm/)).toBeTruthy();
+    expect(screen.queryByText(/per G\$/)).toBeNull();
     await waitFor(() => {
       expect(screen.getByLabelText("Expected output").textContent).toBe("0");
     });
