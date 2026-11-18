@@ -205,7 +205,7 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
 function useQuoteWidgetApi(props: GoodReserveWidgetProps): GoodReserveWidgetApi {
   const { defaultDirection = "buy", showBranding = true, className, style } = props;
   const [direction, setDirection] = useState<SwapDirection>(defaultDirection);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(defaultDirection === "buy" ? ONE_USDM : "");
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
   const quoteState = useStandaloneGoodReserveQuote({ amount, direction });
   const unitQuote = useStandaloneGoodReserveQuote({ amount: ONE_USDM, direction: "buy" });
@@ -453,7 +453,12 @@ function SwapWidget({ renderToast, ...props }: GoodReserveWidgetProps) {
   return (
     <>
       <GoodReserveView api={api} />
-      <ReserveToasts step={api.step} swapError={api.swapError} renderToast={renderToast} />
+      <ReserveToasts
+        step={api.step}
+        swapError={api.swapError}
+        renderToast={renderToast}
+        showBranding={api.showBranding}
+      />
     </>
   );
 }
@@ -477,7 +482,12 @@ function SwapCustom({
   return (
     <>
       {children(api)}
-      <ReserveToasts step={api.step} swapError={api.swapError} renderToast={renderToast} />
+      <ReserveToasts
+        step={api.step}
+        swapError={api.swapError}
+        renderToast={renderToast}
+        showBranding={api.showBranding}
+      />
     </>
   );
 }
@@ -502,10 +512,12 @@ function ReserveToasts({
   step,
   swapError,
   renderToast,
+  showBranding,
 }: {
   step: GoodReserveWidgetApi["step"];
   swapError: string | null;
   renderToast?: (toast: GoodReserveToastPayload) => ReactNode;
+  showBranding?: boolean;
 }) {
   const [item, setItem] = useState<GoodReserveToastItem | null>(null);
   const nextId = useRef(0);
@@ -521,7 +533,14 @@ function ReserveToasts({
     }
   }, [step, swapError]);
 
-  return <GoodReserveToast item={item} onDismiss={dismiss} renderToast={renderToast} />;
+  return (
+    <GoodReserveToast
+      item={item}
+      onDismiss={dismiss}
+      renderToast={renderToast}
+      showBranding={showBranding}
+    />
+  );
 }
 
 GoodReserveWidget.Custom = CustomWidget;

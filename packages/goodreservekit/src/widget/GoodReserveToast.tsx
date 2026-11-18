@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { CnvLabsLogo } from "../icons/CnvLabsLogo.js";
 import { useGoodReserveConfig } from "../provider/GoodReserveProvider.js";
 import { themeToStyle } from "../theme/theme.js";
 import { styles } from "../styles/styles.js";
@@ -24,10 +25,13 @@ export function GoodReserveToast({
   item,
   onDismiss,
   renderToast,
+  showBranding = true,
 }: {
   item: GoodReserveToastItem | null;
   onDismiss: () => void;
   renderToast?: (toast: GoodReserveToastPayload) => ReactNode;
+  /** Show the CNV Labs logo on the left. Off falls back to a small tone dot. */
+  showBranding?: boolean;
 }) {
   const { theme } = useGoodReserveConfig();
   const [open, setOpen] = useState(false);
@@ -71,8 +75,12 @@ export function GoodReserveToast({
           renderToast(payload)
         ) : (
           <div className={`${styles.toast} ${toneClass}`} role="alert" onClick={payload.dismiss}>
-            <span className={styles.toastMark} aria-hidden="true" />
-            <p>{item.message}</p>
+            {showBranding ? (
+              <CnvLabsLogo className={styles.toastLogo} aria-hidden="true" role="presentation" />
+            ) : (
+              <span className={styles.toastMark} aria-hidden="true" />
+            )}
+            <p title={item.message}>{item.message}</p>
             <button type="button" className={styles.toastClose} aria-label="Dismiss" onClick={payload.dismiss}>
               ×
             </button>

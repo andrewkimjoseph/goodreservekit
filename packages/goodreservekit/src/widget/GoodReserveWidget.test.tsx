@@ -164,6 +164,42 @@ describe("GoodReserveWidget", () => {
     const toast = await screen.findByRole("alert");
     expect(toast.textContent).toContain("You rejected the request in your wallet. Nothing was swapped.");
     expect(document.querySelector(".grk-root")?.textContent).not.toContain("Nothing was swapped");
+    expect(toast.querySelector(".grk-toastLogo")).not.toBeNull();
+    expect(toast.querySelector(".grk-toastMark")).toBeNull();
+    expect(toast.querySelector("p")?.getAttribute("title")).toBe(
+      "You rejected the request in your wallet. Nothing was swapped.",
+    );
+  });
+
+  it("drops the toast logo when branding is off", async () => {
+    accountState = {
+      address: "0x0000000000000000000000000000000000000001",
+      chainId: 42220,
+    };
+    prepareReserveSwap.mockResolvedValue({
+      preparedFlow: true,
+      chainId: 42220,
+      from: accountState.address,
+      summary: "swap",
+      steps: [
+        {
+          kind: "contract",
+          to: "0x88de45906D4F5a57315c133620cfa484cB297541",
+          data: "0x1234",
+          value: "0",
+          description: "swap",
+        },
+      ],
+    });
+    sendTransactionAsync.mockRejectedValue(new Error("User rejected the request."));
+
+    renderWidget({ showBranding: false });
+    fireEvent.change(screen.getByLabelText("Amount of USDm to swap"), { target: { value: "1" } });
+    fireEvent.click(await screen.findByRole("button", { name: "Swap" }));
+
+    const toast = await screen.findByRole("alert");
+    expect(toast.querySelector(".grk-toastLogo")).toBeNull();
+    expect(toast.querySelector(".grk-toastMark")).not.toBeNull();
   });
 
   it("does not toast a quote failure", async () => {

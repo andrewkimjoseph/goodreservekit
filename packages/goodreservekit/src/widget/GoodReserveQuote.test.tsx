@@ -61,13 +61,27 @@ describe("GoodReserveWidget quote mode", () => {
     expect(screen.queryByText("Slippage tolerance")).toBeNull();
     expect(screen.queryByText("Minimum received")).toBeNull();
 
-    fireEvent.change(screen.getByLabelText("Amount of USDm to quote"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("Amount of USDm to quote"), { target: { value: "2" } });
+    await waitFor(() => {
+      expect(getReserveQuote).toHaveBeenCalledWith("USDm", "GoodDollar", "2", { amountSide: "in" });
+    });
+    expect(screen.getByText(/8.?000 G\$ per 1 USDm/)).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("starts at 1 USDm and quotes without any typing", async () => {
+    render(<GoodReserveWidget mode="quote" />);
+    expect((screen.getByLabelText("Amount of USDm to quote") as HTMLInputElement).value).toBe("1");
     await waitFor(() => {
       expect(screen.getByLabelText("Expected output").textContent).toMatch(/8.?000/);
     });
-    expect(screen.getByText(/8.?000 G\$ per 1 USDm/)).toBeTruthy();
     expect(getReserveQuote).toHaveBeenCalledWith("USDm", "GoodDollar", "1", { amountSide: "in" });
-    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByText(/8.?000 G\$ per 1 USDm/)).toBeTruthy();
+  });
+
+  it("starts empty when the widget begins on G$", () => {
+    render(<GoodReserveWidget mode="quote" defaultDirection="sell" />);
+    expect((screen.getByLabelText("Amount of G$ to quote") as HTMLInputElement).value).toBe("");
   });
 
   it("clears the typed amount when the direction flips", async () => {
@@ -88,7 +102,6 @@ describe("GoodReserveWidget quote mode", () => {
   it("shows a quote failure in the card", async () => {
     getReserveQuote.mockRejectedValue(new Error("rpc down"));
     render(<GoodReserveWidget mode="quote" />);
-    fireEvent.change(screen.getByLabelText("Amount of USDm to quote"), { target: { value: "1" } });
     expect(await screen.findByText("rpc down")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
   });

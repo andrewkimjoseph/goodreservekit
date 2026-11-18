@@ -24,7 +24,7 @@ import { GoodReserveProvider, GoodReserveWidget, flatTheme } from "@cnvlabskoxyz
 <GoodReserveWidget mode="quote" defaultDirection="buy" />
 ```
 
-The price line is the reserve quote for 1 USDm, written as G$ per 1 USDm, including before an amount is typed and after the direction flips. Quotes use a public Celo RPC. Pass `rpcUrl` on `GoodReserveProvider` to use your own endpoint. `useStandaloneGoodReserveQuote({ amount, direction })` is the headless version, and `GoodReserveWidget.Custom mode="quote"` exposes the same state. Quotes are not attributed. ERC-8021 tags are appended only to approve and swap calldata in swap mode.
+The USDm field starts at 1, so a quote shows as soon as the widget loads. Flipping clears it. With `defaultDirection="sell"` the G$ field starts empty. The price line is the reserve quote for 1 USDm, written as G$ per 1 USDm, including before an amount is typed and after the direction flips. Quotes use a public Celo RPC. Pass `rpcUrl` on `GoodReserveProvider` to use your own endpoint. `useStandaloneGoodReserveQuote({ amount, direction })` is the headless version, and `GoodReserveWidget.Custom mode="quote"` exposes the same state. Quotes are not attributed. ERC-8021 tags are appended only to approve and swap calldata in swap mode.
 
 ## Headless hooks
 
