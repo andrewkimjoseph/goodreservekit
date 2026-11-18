@@ -5,6 +5,7 @@ import {
   minimumReceived,
   parsePositiveAmount,
   pricePerTokenIn,
+  sanitizeSlippageInput,
   tokensForDirection,
 } from "./format.js";
 import { flatTheme, mergeTheme } from "./theme/theme.js";
@@ -25,6 +26,14 @@ describe("reserve formatting", () => {
   it("states output per input and the slippage floor", () => {
     expect(pricePerTokenIn("1000", "2")).toBe("0.002");
     expect(minimumReceived("2", 0.5)).toBe("1.99");
+  });
+
+  it("keeps custom slippage text and the applied percent in agreement", () => {
+    expect(sanitizeSlippageInput("90")).toEqual({ text: "50", value: 50 });
+    expect(sanitizeSlippageInput("0.755")).toEqual({ text: "0.75", value: 0.75 });
+    expect(sanitizeSlippageInput("abc")).toEqual({ text: "", value: 0.5 });
+    expect(sanitizeSlippageInput("0.")).toEqual({ text: "0.", value: null });
+    expect(sanitizeSlippageInput(".5")).toEqual({ text: ".5", value: 0.5 });
   });
 
   it("caps balance display at four decimals and keeps swap input ungrouped", () => {

@@ -409,13 +409,16 @@
     visibility 0s linear 0s;
 }
 
-.grk-settings {
+.grk-settingsClip {
   overflow: hidden;
   min-height: 0;
-  margin: 0;
+}
+
+.grk-settings {
+  margin: 0 0 14px;
   border: var(--grk-border-width) solid var(--grk-border);
   border-radius: var(--grk-radius-control);
-  padding: 12px 12px 26px;
+  padding: 12px;
   background: var(--grk-surface);
 }
 
@@ -446,27 +449,54 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--grk-foreground);
-  cursor: pointer;
 }
 
 .grk-preset {
   flex: 1;
+  cursor: pointer;
 }
 
-.grk-preset[aria-pressed="true"] {
+.grk-preset[aria-pressed="true"],
+.grk-custom[data-active="true"] {
   background: var(--grk-background);
   border-color: var(--grk-border);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .grk-custom {
-  width: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1px;
+  width: 92px;
   cursor: text;
   font-variant-numeric: tabular-nums;
+}
+
+.grk-custom input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: right;
+  cursor: text;
+}
+
+.grk-custom:not([data-filled="true"]) input {
   text-align: center;
 }
 
-.grk-custom:focus {
+.grk-custom[data-filled="true"]::after {
+  content: "%";
+  flex: none;
+}
+
+.grk-custom:focus-within {
   background: var(--grk-background);
   border-color: var(--grk-border);
 }

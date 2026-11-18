@@ -36,6 +36,7 @@ export const styles = {
   toastClose: "grk-toastClose",
   brandLogo: "grk-brandLogo",
   settingsWrap: "grk-settingsWrap",
+  settingsClip: "grk-settingsClip",
   settings: "grk-settings",
   presets: "grk-presets",
   preset: "grk-preset",

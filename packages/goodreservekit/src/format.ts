@@ -61,3 +61,35 @@ export function trimTrailingZeros(value: string): string {
   if (!value.includes(".")) return value;
   return value.replace(/\.?0+$/, "");
 }
+
+const MAX_SLIPPAGE_PERCENT = 50;
+const MIN_APPLIED_SLIPPAGE_PERCENT = 0.01;
+
+/**
+ * Text for the custom slippage field, and the percent to apply.
+ * `value` is null while the text is still below the smallest applied percent.
+ * A blank field applies `fallback`.
+ */
+export function sanitizeSlippageInput(
+  raw: string,
+  fallback = 0.5,
+): { text: string; value: number | null } {
+  const cleaned = raw.replace(/[^\d.]/g, "");
+  const dot = cleaned.indexOf(".");
+  const wholeRaw = dot === -1 ? cleaned : cleaned.slice(0, dot);
+  const fraction = dot === -1 ? null : cleaned.slice(dot + 1).replace(/\./g, "").slice(0, 2);
+  const whole = wholeRaw.replace(/^0+(?=\d)/, "");
+
+  if (whole === "" && fraction === null) return { text: "", value: fallback };
+
+  const text = fraction === null ? whole : `${whole}.${fraction}`;
+  if (text === ".") return { text, value: null };
+
+  const numeric = Number(text);
+  if (!Number.isFinite(numeric)) return { text, value: null };
+  if (numeric > MAX_SLIPPAGE_PERCENT) {
+    return { text: String(MAX_SLIPPAGE_PERCENT), value: MAX_SLIPPAGE_PERCENT };
+  }
+  if (numeric < MIN_APPLIED_SLIPPAGE_PERCENT) return { text, value: null };
+  return { text, value: numeric };
+}

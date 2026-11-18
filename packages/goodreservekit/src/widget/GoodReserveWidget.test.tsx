@@ -183,14 +183,46 @@ describe("GoodReserveWidget", () => {
     renderWidget();
     const settings = screen.getByRole("button", { name: "Slippage settings, 0.5%" });
     expect(settings.getAttribute("aria-expanded")).toBe("false");
-    expect(document.getElementById("grk-slippage")?.parentElement?.getAttribute("data-open")).toBe("false");
+    expect(document.getElementById("grk-slippage")?.closest("[data-open]")?.getAttribute("data-open")).toBe(
+      "false",
+    );
 
     fireEvent.click(settings);
     expect(settings.getAttribute("aria-expanded")).toBe("true");
-    expect(document.getElementById("grk-slippage")?.parentElement?.getAttribute("data-open")).toBe("true");
+    expect(document.getElementById("grk-slippage")?.closest("[data-open]")?.getAttribute("data-open")).toBe(
+      "true",
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "1%" }));
     expect(screen.getByRole("button", { name: "Slippage settings, 1%" })).toBeTruthy();
+  });
+
+  it("shows the custom slippage that is actually applied", () => {
+    renderWidget();
+    fireEvent.click(screen.getByRole("button", { name: "Slippage settings, 0.5%" }));
+    const custom = screen.getByLabelText("Custom slippage percent") as HTMLInputElement;
+
+    fireEvent.change(custom, { target: { value: "90" } });
+    expect(custom.value).toBe("50");
+    expect(screen.getByRole("button", { name: "Slippage settings, 50%" })).toBeTruthy();
+    expect(custom.parentElement?.getAttribute("data-active")).toBe("true");
+
+    fireEvent.change(custom, { target: { value: "0.75" } });
+    expect(custom.value).toBe("0.75");
+    expect(screen.getByRole("button", { name: "Slippage settings, 0.75%" })).toBeTruthy();
+
+    fireEvent.change(custom, { target: { value: "0." } });
+    expect(custom.value).toBe("0.");
+    expect(screen.getByRole("button", { name: "Slippage settings, 0.75%" })).toBeTruthy();
+    fireEvent.blur(custom);
+    expect(custom.value).toBe("");
+    expect(screen.getByRole("button", { name: "Slippage settings, 0.5%" })).toBeTruthy();
+
+    fireEvent.change(custom, { target: { value: "0.75" } });
+    fireEvent.click(screen.getByRole("button", { name: "1%" }));
+    expect(custom.value).toBe("");
+    expect(screen.getByRole("button", { name: "Slippage settings, 1%" })).toBeTruthy();
+    expect(custom.parentElement?.getAttribute("data-active")).toBe("false");
   });
 
   it("exposes the same actions through the custom render prop", () => {

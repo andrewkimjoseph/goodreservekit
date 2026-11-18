@@ -12,6 +12,7 @@ import {
   formatDisplayAmount,
   minimumReceived,
   pricePerTokenIn,
+  sanitizeSlippageInput,
   tokensForDirection,
   type SwapDirection,
 } from "../format.js";
@@ -192,6 +193,7 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
   const { theme } = useGoodReserveConfig();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [customSlippage, setCustomSlippage] = useState("");
+  const customActive = !SLIPPAGE_PRESETS.some((preset) => preset === api.slippage);
 
   return (
     <section
@@ -219,38 +221,50 @@ export function GoodReserveView({ api }: { api: GoodReserveWidgetApi }) {
       </header>
 
       <div className={styles.settingsWrap} data-open={settingsOpen ? "true" : "false"}>
-        <div className={styles.settings} id={SLIPPAGE_PANEL_ID} inert={settingsOpen ? undefined : true}>
-          <h3>Slippage tolerance</h3>
-          <div className={styles.presets}>
-            {SLIPPAGE_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                className={styles.preset}
-                aria-pressed={api.slippage === preset}
-                onClick={() => {
-                  api.setSlippage(preset);
-                  setCustomSlippage("");
-                }}
+        <div className={styles.settingsClip}>
+          <div className={styles.settings} id={SLIPPAGE_PANEL_ID} inert={settingsOpen ? undefined : true}>
+            <h3>Slippage tolerance</h3>
+            <div className={styles.presets}>
+              {SLIPPAGE_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  className={styles.preset}
+                  aria-pressed={api.slippage === preset}
+                  onClick={() => {
+                    api.setSlippage(preset);
+                    setCustomSlippage("");
+                  }}
+                >
+                  {preset}%
+                </button>
+              ))}
+              <span
+                className={styles.custom}
+                data-active={customActive ? "true" : "false"}
+                data-filled={customSlippage ? "true" : "false"}
               >
-                {preset}%
-              </button>
-            ))}
-            <input
-              className={styles.custom}
-              inputMode="decimal"
-              aria-label="Custom slippage percent"
-              placeholder="Custom"
-              value={customSlippage}
-              onChange={(event) => {
-                const next = event.target.value;
-                setCustomSlippage(next);
-                const numeric = Number(next);
-                if (Number.isFinite(numeric) && numeric > 0 && numeric <= 50) {
-                  api.setSlippage(numeric);
-                }
-              }}
-            />
+                <input
+                  inputMode="decimal"
+                  aria-label="Custom slippage percent"
+                  placeholder="Custom"
+                  maxLength={5}
+                  value={customSlippage}
+                  onChange={(event) => {
+                    const next = sanitizeSlippageInput(event.target.value, DEFAULT_SLIPPAGE);
+                    setCustomSlippage(next.text);
+                    if (next.value !== null) api.setSlippage(next.value);
+                  }}
+                  onBlur={() => {
+                    const next = sanitizeSlippageInput(customSlippage, DEFAULT_SLIPPAGE);
+                    if (next.text === "" || next.value === null) {
+                      setCustomSlippage("");
+                      api.setSlippage(DEFAULT_SLIPPAGE);
+                    }
+                  }}
+                />
+              </span>
+            </div>
           </div>
         </div>
       </div>
