@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { parseUnits } from "viem";
 import { celo } from "viem/chains";
-import { useAccount, useConfig, useConnect, useSwitchChain } from "wagmi";
+import { useAccount, useConfig, useSwitchChain } from "wagmi";
+import { reconnect } from "wagmi/actions";
 import { injected } from "wagmi/connectors";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { CnvLabsLogo } from "../icons/CnvLabsLogo.js";
@@ -103,7 +104,6 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
   const [slippage, setSlippage] = useState(0.5);
   const { address, chainId, status } = useAccount();
   const { switchChain } = useSwitchChain();
-  const { connect } = useConnect();
   const config = useConfig();
   const { openConnectModal } = useConnectModal();
   const detected = useRef(false);
@@ -141,14 +141,15 @@ export function useGoodReserveWidget(props: GoodReserveWidgetProps): GoodReserve
     void connector(config as never)
       .isAuthorized()
       .then((authorized) => {
-        if (!cancelled && authorized) connect({ connector });
+        if (cancelled || !authorized) return;
+        return reconnect(config, { connectors: [connector] });
       })
       .catch(() => {});
     return () => {
       cancelled = true;
       detected.current = false;
     };
-  }, [address, config, connect, detectInjected, status]);
+  }, [address, config, detectInjected, status]);
 
   const insufficient = useMemo(() => {
     const parsed = quoteState.amount;

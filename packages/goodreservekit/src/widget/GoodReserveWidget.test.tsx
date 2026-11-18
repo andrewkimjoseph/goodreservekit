@@ -4,14 +4,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GoodReserveProvider } from "../provider/GoodReserveProvider.js";
 import { GoodReserveWidget } from "./GoodReserveWidget.js";
 
-const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient, refetchBalances, connect, isAuthorized, accountListeners } =
+const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAsync, publicClient, refetchBalances, reconnect, isAuthorized, accountListeners } =
   vi.hoisted(() => ({
     openConnectModal: vi.fn(),
     getReserveQuote: vi.fn(),
     prepareReserveSwap: vi.fn(),
     sendTransactionAsync: vi.fn(),
     refetchBalances: vi.fn(async () => ({})),
-    connect: vi.fn(),
+    reconnect: vi.fn(),
     isAuthorized: vi.fn(async () => false),
     accountListeners: new Set<() => void>(),
     publicClient: {
@@ -21,6 +21,10 @@ const { openConnectModal, getReserveQuote, prepareReserveSwap, sendTransactionAs
 
 vi.mock("wagmi/connectors", () => ({
   injected: () => () => ({ isAuthorized }),
+}));
+
+vi.mock("wagmi/actions", () => ({
+  reconnect,
 }));
 
 vi.mock("wagmi", () => ({
@@ -36,7 +40,6 @@ vi.mock("wagmi", () => ({
     return accountState;
   },
   useConfig: () => ({}),
-  useConnect: () => ({ connect }),
   usePublicClient: () => publicClient,
   useSendTransaction: () => ({ sendTransactionAsync }),
   useSwitchChain: () => ({ switchChain: vi.fn() }),
@@ -87,13 +90,14 @@ describe("GoodReserveWidget", () => {
     delete window.ethereum;
     isAuthorized.mockReset();
     isAuthorized.mockResolvedValue(false);
-    connect.mockReset();
-    connect.mockImplementation(() => {
+    reconnect.mockReset();
+    reconnect.mockImplementation(async () => {
       publishAccount({
         address: "0x0000000000000000000000000000000000000001",
         chainId: 42220,
         status: "connected",
       });
+      return [];
     });
     openConnectModal.mockReset();
     refetchBalances.mockClear();
@@ -114,7 +118,7 @@ describe("GoodReserveWidget", () => {
     isAuthorized.mockResolvedValue(true);
     renderWidget();
     expect(await screen.findByRole("button", { name: "Enter amount" })).toBeTruthy();
-    expect(connect).toHaveBeenCalledOnce();
+    expect(reconnect).toHaveBeenCalledOnce();
     expect(openConnectModal).not.toHaveBeenCalled();
   });
 
@@ -122,7 +126,7 @@ describe("GoodReserveWidget", () => {
     window.ethereum = { request: vi.fn() };
     renderWidget();
     await waitFor(() => expect(isAuthorized).toHaveBeenCalled());
-    expect(connect).not.toHaveBeenCalled();
+    expect(reconnect).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Connect wallet" })).toBeTruthy();
   });
 
@@ -142,7 +146,7 @@ describe("GoodReserveWidget", () => {
     };
     const connected = renderWidget();
     await Promise.resolve();
-    expect(connect).not.toHaveBeenCalled();
+    expect(reconnect).not.toHaveBeenCalled();
     connected.unmount();
 
     accountState = { status: "disconnected" };
