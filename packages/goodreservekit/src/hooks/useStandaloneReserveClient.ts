@@ -19,8 +19,16 @@ function celoPublicClient(rpcUrl?: string): PublicClient {
   return client;
 }
 
+const DEFAULT_ANALYTICS_DEVICE_ID = "cnvlabskoxyz_goodreservekit";
+
 /** Reserve client for quote-only mode. Uses a public Celo RPC and does not need wagmi. */
 export function useStandaloneReserveClient(): GoodReserveBrowserClient {
-  const { rpcUrl } = useGoodReserveConfig();
-  return useMemo(() => createGoodDollarReserveClient(celoPublicClient(rpcUrl)), [rpcUrl]);
+  const { rpcUrl, analyticsDeviceId } = useGoodReserveConfig();
+  return useMemo(
+    () =>
+      createGoodDollarReserveClient(celoPublicClient(rpcUrl), {
+        analyticsDeviceId: analyticsDeviceId ?? DEFAULT_ANALYTICS_DEVICE_ID,
+      }),
+    [rpcUrl, analyticsDeviceId],
+  );
 }

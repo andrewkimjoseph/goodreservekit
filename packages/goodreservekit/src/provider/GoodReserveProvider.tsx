@@ -10,6 +10,12 @@ export interface GoodReserveConfig {
   /** Public Celo HTTP endpoint for quote-only mode. Omit to use viem's default. */
   rpcUrl?: string;
   theme: GoodReserveTheme;
+  /**
+   * device_id for celina-stats-api offchain read telemetry (get_gooddollar_reserve_quote,
+   * estimate_gooddollar_reserve_swap). Defaults to "cnvlabskoxyz_goodreservekit".
+   * Set explicitly to override at the app level (e.g. "the_good_pax_app").
+   */
+  analyticsDeviceId?: string;
 }
 
 const GoodReserveContext = createContext<GoodReserveConfig | null>(null);
@@ -20,6 +26,11 @@ export interface GoodReserveProviderProps {
   /** Public Celo HTTP endpoint used by quote-only mode. */
   rpcUrl?: string;
   theme?: GoodReserveTheme | GoodReserveThemeOverride;
+  /**
+   * device_id for celina-stats-api offchain read telemetry. Overrides the
+   * default "cnvlabskoxyz_goodreservekit" at the app level.
+   */
+  analyticsDeviceId?: string;
   children: ReactNode;
 }
 
@@ -37,6 +48,7 @@ export function GoodReserveProvider({
   attributionTags,
   rpcUrl,
   theme,
+  analyticsDeviceId,
   children,
 }: GoodReserveProviderProps) {
   const tagKey = attributionTags?.join("|") ?? "";
@@ -49,8 +61,9 @@ export function GoodReserveProvider({
       attributionTags: tagKey ? tagKey.split("|") : undefined,
       rpcUrl,
       theme: resolvedTheme,
+      analyticsDeviceId,
     }),
-    [tagKey, rpcUrl, resolvedTheme],
+    [tagKey, rpcUrl, resolvedTheme, analyticsDeviceId],
   );
 
   return <GoodReserveContext.Provider value={value}>{children}</GoodReserveContext.Provider>;

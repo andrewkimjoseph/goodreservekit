@@ -28,15 +28,18 @@ export interface GoodReserveBrowserClient {
   ) => Promise<PreparedReserveFlow>;
 }
 
+const DEFAULT_ANALYTICS_DEVICE_ID = "cnvlabskoxyz_goodreservekit";
+
 export function useGoodReserveClient(): GoodReserveBrowserClient | null {
   const publicClient = usePublicClient({ chainId: celo.id });
-  const { attributionTags } = useGoodReserveConfig();
+  const { attributionTags, analyticsDeviceId } = useGoodReserveConfig();
   const tagKey = attributionTags?.join("|") ?? "";
 
   return useMemo(() => {
     if (!publicClient) return null;
     return createGoodDollarReserveClient(publicClient, {
       attributionTags: tagKey ? tagKey.split("|") : undefined,
+      analyticsDeviceId: analyticsDeviceId ?? DEFAULT_ANALYTICS_DEVICE_ID,
     });
-  }, [publicClient, tagKey]);
+  }, [publicClient, tagKey, analyticsDeviceId]);
 }
