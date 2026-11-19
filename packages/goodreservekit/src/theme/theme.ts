@@ -42,19 +42,19 @@ export type GoodReserveThemeOverride = {
 const FLAT_SHADOW =
   "0 0 0 1px rgba(0,0,0,.06), 0 5px 15px rgba(0,0,0,.08), 0 15px 35px -5px rgba(25,28,33,.2)";
 
-/** White card, 1px borders, soft shadow, Celo forest green as the only brand color. */
+/** White card, 1px borders, soft shadow, CNV Labs purple as the brand color. */
 export function flatTheme(override?: GoodReserveThemeOverride): GoodReserveTheme {
   return mergeTheme(
     {
       colors: {
         background: "#ffffff",
-        surface: "#f9fafb",
-        foreground: "#18181b",
-        muted: "#71717a",
-        primary: "#476520",
+        surface: "#f7f4f8",
+        foreground: "#2a1238",
+        muted: "#6e5a7a",
+        primary: "#3d0c6d",
         primaryForeground: "#ffffff",
         danger: "#b91c1c",
-        border: "#e4e4e7",
+        border: "#e6e0ea",
       },
       radii: {
         widget: "12px",
@@ -65,8 +65,8 @@ export function flatTheme(override?: GoodReserveThemeOverride): GoodReserveTheme
       fontFamily: '"Sen", ui-sans-serif, system-ui, sans-serif',
       toast: {
         background: "#ffffff",
-        foreground: "#18181b",
-        border: "#e4e4e7",
+        foreground: "#2a1238",
+        border: "#e6e0ea",
         shadow: "0 0 0 1px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.12)",
         durationMs: 4000,
         offset: "16px",

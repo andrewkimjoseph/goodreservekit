@@ -46,9 +46,9 @@ describe("reserve formatting", () => {
 });
 
 describe("flat theme", () => {
-  it("keeps the Celo forest primary and lets a host replace one token", () => {
+  it("keeps the CNV Labs primary and lets a host replace one token", () => {
     const theme = flatTheme();
-    expect(theme.colors.primary).toBe("#476520");
+    expect(theme.colors.primary).toBe("#3d0c6d");
     expect(theme.colors.background).toBe("#ffffff");
     expect(theme.radii.widget).toBe("12px");
     expect(theme.radii.control).toBe("8px");

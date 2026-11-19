@@ -34,7 +34,7 @@ The USDm field starts at 1, so a quote shows as soon as the widget loads. Flippi
 
 ## Theme
 
-`flatTheme()` is the default: a white card, 1px borders, a soft shadow, and Celo forest green on the primary button. Override with `mergeTheme(flatTheme(), { colors: { primary: "#ff00aa" } })`. Tokens are CSS variables prefixed `--grk-` on the widget root.
+`flatTheme()` is the default: a white card, 1px borders, a soft shadow, and CNV Labs purple on the primary button. Override with `mergeTheme(flatTheme(), { colors: { primary: "#ff00aa" } })`. Tokens are CSS variables prefixed `--grk-` on the widget root.
 
 ## Demo
 
