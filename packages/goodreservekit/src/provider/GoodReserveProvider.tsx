@@ -7,7 +7,7 @@ import {
 
 export interface GoodReserveConfig {
   attributionTags?: string[];
-  /** Public Celo HTTP endpoint for quote-only mode. Omit to use viem's default. */
+  /** Public Celo HTTP endpoint for quote-only mode. Omit to use https://forno.celo.org. */
   rpcUrl?: string;
   theme: GoodReserveTheme;
   /**
@@ -23,7 +23,7 @@ const GoodReserveContext = createContext<GoodReserveConfig | null>(null);
 export interface GoodReserveProviderProps {
   /** Extra ERC-8021 codes appended after `celina` on approve and swap calldata. */
   attributionTags?: string[];
-  /** Public Celo HTTP endpoint used by quote-only mode. */
+  /** Public Celo HTTP endpoint for quote-only mode. Omit to use https://forno.celo.org. */
   rpcUrl?: string;
   theme?: GoodReserveTheme | GoodReserveThemeOverride;
   /**
