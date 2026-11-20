@@ -1,6 +1,6 @@
 {
   "name": "@cnvlabskoxyz/goodreservekit",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Flat React widget for GoodDollar reserve swaps (G$ ↔ USDm) on Celo. GoodReserve by CNV Labs KO XYZ.",
   "type": "module",
   "sideEffects": true,
