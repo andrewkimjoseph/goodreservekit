@@ -4,6 +4,10 @@ Flat React widget for swapping GoodDollar (G$) and USDm through the GoodDollar r
 
 **GoodReserve by CNV Labs KO XYZ.**
 
+![GoodReserve swap mode](docs/swap.png)
+
+![GoodReserve quote mode](docs/quote.png)
+
 The widget quotes and prepares swaps with [`@cnvlabskoxyz/celina-sdk/gooddollar-reserve`](https://github.com/andrewkimjoseph/celina-sdk). Wallet connection uses [RainbowKit](https://rainbowkit.com). The host app owns `WagmiProvider` and `RainbowKitProvider`.
 
 ```tsx
